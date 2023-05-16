@@ -33,13 +33,43 @@ Route::middleware('api.user')->group(function() {
         Route::get('/', function(Request $request) {
             return response()->json([
                 'statusCode' => 200,
-                'message' => 'Welcome to the API!',
-                'user' => $request->userauth
+                'message' => 'Welcome to the API!'
+            ], 200);
+        });
+    });
+});
+
+Route::middleware('api.admin')->group(function() {
+    Route::prefix('/admin')->group(function() {
+        Route::get('/', function(Request $request) {
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Welcome to the API!'
             ], 200);
         });
 
-        Route::get('/', 'App\Http\Controllers\UserController@get');
-        Route::put('/', 'App\Http\Controllers\UserController@update');
-        Route::delete('/', 'App\Http\Controllers\UserController@delete');
+        Route::prefix('/products')->group(function() {
+            Route::get('/', 'App\Http\Controllers\AdminController@get_all_products');
+            Route::post('/', 'App\Http\Controllers\AdminController@create_product');
+            Route::get('/{id}', 'App\Http\Controllers\AdminController@get_product');
+            Route::post('/{id}', 'App\Http\Controllers\AdminController@update_product');
+            Route::delete('/{id}', 'App\Http\Controllers\AdminController@delete_product');
+        });
+
+        Route::prefix('/users')->group(function() {
+            Route::get('/', 'App\Http\Controllers\AdminController@get_all_users');
+            Route::get('/{id}', 'App\Http\Controllers\AdminController@get_user');
+            Route::post('/', 'App\Http\Controllers\AdminController@create_user');
+            Route::put('/{id}', 'App\Http\Controllers\AdminController@update_user');
+            Route::delete('/{id}', 'App\Http\Controllers\AdminController@delete_user');
+        });
+
+        Route::prefix('/categories')->group(function() {
+            Route::get('/', 'App\Http\Controllers\AdminController@get_all_categories');
+            Route::get('/{id}', 'App\Http\Controllers\AdminController@get_category');
+            Route::post('/', 'App\Http\Controllers\AdminController@create_category');
+            Route::put('/{id}', 'App\Http\Controllers\AdminController@update_category');
+            Route::delete('/{id}', 'App\Http\Controllers\AdminController@delete_category');
+        });
     });
 });

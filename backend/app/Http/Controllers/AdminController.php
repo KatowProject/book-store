@@ -1,0 +1,427 @@
+<?php
+
+namespace App\Http\Controllers;
+
+use App\Models\Category;
+use App\Models\Product;
+use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class AdminController extends Controller
+{
+    public function get_all_products(Request $request) {
+        $products = Product::with('category')->get();
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success',
+            'data' => $products
+        ], 200);
+    }
+
+    public function get_product(Request $request, $id) {
+        $product = Product::with('category')->find($id);
+
+        if (!$product) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success',
+            'data' => $product
+        ], 200);
+    }
+
+    public function create_product(Request $request) {
+        $data = $request->all();
+
+        $v = Validator::make($data, [
+            'name' => 'required|string',
+            'price' => 'required|numeric',
+            'stock' => 'required|numeric',
+            'image' => 'required|mimes:jpg,jpeg,png',
+            'description' => 'required|string',
+            'status' => 'required|in:active,inactive',
+            'category_id' => 'required|exists:categories,id'
+        ]);
+
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => $v->errors()
+            ], 400);
+        }
+
+        $image = $request->file('image');
+        $image_name = time() . '.' . $image->extension();
+        $image->move(public_path('images'), $image_name);
+
+        try {
+            $product = Product::create([
+                'name' => $data['name'],
+                'price' => $data['price'],
+                'stock' => $data['stock'],
+                'image' => $image_name,
+                'description' => $data['description'],
+                'status' => $data['status'],
+                'category_id' => $data['category_id']
+            ]);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Product created successfully',
+                'data' => $product
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+    public function update_product(Request $request, $id) {
+        $data = $request->all();
+
+        $v = Validator::make($data, [
+            'name' => 'string',
+            'price' => 'numeric',
+            'stock' => 'numeric',
+            'image' => 'mimes:jpg,jpeg,png',
+            'description' => 'string',
+            'status' => 'in:active,inactive',
+            'category_id' => 'exists:categories,id'
+        ]);
+
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => $v->errors()
+            ], 400);
+        }
+
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        if ($request->hasFile('image')) {
+            $image = $request->file('image');
+            $image_name = time() . '.' . $image->extension();
+            $image->move(public_path('images'), $image_name);
+            $data['image'] = $image_name;
+
+            // Delete old image
+            $old_image = $product->image;
+            $image_path = public_path('images') . '/' . $old_image;
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
+        }
+
+        try {
+            $product->update($data);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Product updated successfully',
+                'data' => $product
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+    public function delete_product(Request $request, $id) {
+        $product = Product::find($id);
+        if (!$product) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Product not found'
+            ], 404);
+        }
+
+        try {
+            $product->delete();
+
+            // Delete image
+            $old_image = $product->image;
+            $image_path = public_path('images') . '/' . $old_image;
+            if (file_exists($image_path)) {
+                unlink($image_path);
+            }
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Product deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+    public function get_all_users(Request $request) {
+        $users = User::all();
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success',
+            'data' => $users
+        ], 200);
+    }
+
+    public function get_user(Request $request, $id) {
+        $user = User::find($id);
+
+        if (!$user) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success',
+            'data' => $user
+        ], 200);
+    }
+
+    public function create_user(Request $request) {
+        $data = $request->all();
+
+        $v = Validator::make($data, [
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users,email',
+            'password' => 'required|string',
+            'role' => 'required|in:admin,user'
+        ]);
+
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => $v->errors()
+            ], 400);
+        }
+
+        try {
+            $user = User::create([
+                'name' => $data['name'],
+                'email' => $data['email'],
+                'password' => $data['password'],
+                'role' => $data['role']
+            ]);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'User created successfully',
+                'data' => $user
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+    public function update_user(Request $request, $id) {
+        $data = $request->all();
+
+        $v = Validator::make($data, [
+            'name' => 'string',
+            'email' => 'email',
+            'password' => 'string',
+            'role' => 'in:admin,user'
+        ]);
+
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => $v->errors()
+            ], 400);
+        }
+
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        try {
+            $user->update($data);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'User updated successfully',
+                'data' => $user
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+    public function delete_user(Request $request, $id) {
+        $user = User::find($id);
+        if (!$user) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'User not found'
+            ], 404);
+        }
+
+        try {
+            $user->delete();
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'User deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+    public function get_all_categories(Request $request) {
+        $categories = Category::all();
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success',
+            'data' => $categories
+        ], 200);
+    }
+
+    public function get_category(Request $request, $id) {
+        $category = Category::find($id);
+
+        if (!$category) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Category not found'
+            ], 404);
+        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success',
+            'data' => $category
+        ], 200);
+    }
+
+    public function create_category(Request $request) {
+        $data = $request->all();
+
+        $v = Validator::make($data, [
+            'name' => 'required|string'
+        ]);
+
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => $v->errors()
+            ], 400);
+        }
+
+        try {
+            $category = Category::create([
+                'name' => $data['name']
+            ]);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Category created successfully',
+                'data' => $category
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+    public function update_category(Request $request, $id) {
+        $data = $request->all();
+
+        $v = Validator::make($data, [
+            'name' => 'string'
+        ]);
+
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => $v->errors()
+            ], 400);
+        }
+
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Category not found'
+            ], 404);
+        }
+
+        try {
+            $category->update($data);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Category updated successfully',
+                'data' => $category
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+
+    public function delete_category(Request $request, $id) {
+        $category = Category::find($id);
+        if (!$category) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Category not found'
+            ], 404);
+        }
+
+        try {
+            $category->delete();
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Category deleted successfully'
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json([
+                'statusCode' => 500,
+                'message' => 'Internal server error'
+            ], 500);
+        }
+    }
+}
