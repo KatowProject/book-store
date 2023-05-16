@@ -14,6 +14,32 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+// Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//     return $request->user();
+// });
+
+Route::get('/', function() {
+    return response()->json([
+        'statusCode' => 200,
+        'message' => 'Welcome to the API!'
+    ], 200);
+});
+
+Route::post('/register', 'App\Http\Controllers\AuthController@register');
+Route::post('/login', 'App\Http\Controllers\AuthController@login');
+
+Route::middleware('api.user')->group(function() {
+    Route::prefix('/user')->group(function() {
+        Route::get('/', function(Request $request) {
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Welcome to the API!',
+                'user' => $request->userauth
+            ], 200);
+        });
+
+        Route::get('/', 'App\Http\Controllers\UserController@get');
+        Route::put('/', 'App\Http\Controllers\UserController@update');
+        Route::delete('/', 'App\Http\Controllers\UserController@delete');
+    });
 });
