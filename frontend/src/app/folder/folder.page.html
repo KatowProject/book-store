@@ -4,11 +4,65 @@
       <ion-menu-button></ion-menu-button>
     </ion-buttons>
     <ion-title>{{ folder }}</ion-title>
+
+    <!-- cart with number -->
+    <ion-buttons slot="end">
+      <ion-button routerLink="/cart">
+        <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
+        <ion-badge color="danger" *ngIf="cart > 0">{{ cart }}</ion-badge>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
+  <!-- add cart icon -->
 </ion-header>
 
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+  <div id="container">
+    <ion-grid>
+      <ion-row *ngIf="folder === 'Home'">
+        <ion-col *ngFor="let item of data" size="6">
+          <ion-card>
+            <!-- clickable -->
+            <ion-router-link [routerLink]="['/folder', item.id]">
+              <img alt="{{ item.name }}" src="{{ item.image }}" />
+              <ion-card-header>
+                <h4 class="ion-text-center font-bold">
+                  {{ item.name }}
+                </h4>
+              </ion-card-header>
+            </ion-router-link>
+            <ion-card-content>
+              <!-- price idr Rp. currency with box -->
+              <ion-row>
+                <ion-col class="ion-text-center">
+                  <ion-text color="primary" class="font-bold">
+                    {{ item.price | currency: 'Rp': 'symbol' }}
+                  </ion-text>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+
+            <ion-row>
+              <ion-col class="ion-text-center" style="padding-bottom: 0px;">
+                <ion-button color="primary" size="block">
+                  <ion-icon name="cart-outline"></ion-icon>
+                  &nbsp;Add
+                </ion-button>
+              </ion-col>
+
+              <ion-col class="ion-text-center" style="padding-top: 0px;">
+                <ion-button color="secondary" size="block">
+                  <ion-icon name="heart-outline"></ion-icon>
+                  &nbsp;Favorite
+                </ion-button>
+              </ion-col>
+            </ion-row>
+          </ion-card>
+        </ion-col>
+      </ion-row>
+    </ion-grid>
+  </div>
+  <!-- <ion-header collapse="condense">
     <ion-toolbar>
       <ion-title size="large">{{ folder }}</ion-title>
     </ion-toolbar>
@@ -17,5 +71,5 @@
   <div id="container">
     <strong class="capitalize">{{ folder }}</strong>
     <p>Explore <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+  </div> -->
 </ion-content>

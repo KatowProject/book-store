@@ -1,0 +1,21 @@
+<ion-content [fullscreen]="true">
+  <div id="container" (keyup.enter)="login()">
+    <h1 class="ion-text-center font-bold">Login Book Store</h1>
+    <br>
+    <ion-item fill="outline">
+      <ion-label position="floating">Username</ion-label>
+      <ion-input [(ngModel)]="form.username" [ngModelOptions]="{standalone: true}" type="email" placeholder="Enter text"
+        required></ion-input>
+    </ion-item>
+    <br>
+    <ion-item fill="outline">
+      <ion-label position="floating">Password</ion-label>
+      <ion-input [(ngModel)]="form.password" [ngModelOptions]="{standalone: true}" type="password"
+        placeholder="Enter text" required></ion-input>
+    </ion-item>
+    <br>
+    <ion-button (click)="login()" color="primary" expand="block"><ion-icon slot="start"
+        name="key"></ion-icon>Login</ion-button>
+  </div>
+
+</ion-content>

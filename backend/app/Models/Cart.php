@@ -33,7 +33,8 @@ class Cart extends Model
      */
     public function product()
     {
-        return $this->belongsTo(Product::class);
+        // return as product object, not showing the product_id
+        return $this->belongsTo(Product::class, 'product_id')->withDefault();
     }
 
 }

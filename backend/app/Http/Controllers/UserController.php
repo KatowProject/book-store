@@ -7,6 +7,7 @@ use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
@@ -54,20 +55,36 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function update_user(Request $request, $id) {
+    public function update_me(Request $request) {
         $user = $request['userauth'];
         $user_id = $user['id'];
 
-        if ($user_id != $id) {
+        $user = User::where('id', $user_id)->first();
+        if (!$user) {
             return response()->json([
-                'statusCode' => 403,
-                'message' => 'Forbidden!'
-            ], 403);
+                'statusCode' => 404,
+                'message' => 'User not found!'
+            ], 404);
         }
 
-        $user = User::where('id', $user_id)->first();
+        $v = Validator::make($request->all(), [
+            'name' => 'string',
+            'email' => 'string|email',
+            'password' => 'string',
+        ]);
 
-        $user->update($request->all());
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Bad request!'
+            ], 400);
+        }
+
+        $user->name = $request['name'] ?? $user->name;
+        $user->email = $request['email'] ?? $user->email;
+        $user->password = $request['password'] ?? $user->password;
+
+        $user->save();
 
         return response()->json([
             'statusCode' => 200,
@@ -81,7 +98,7 @@ class UserController extends Controller
         $user = $request['userauth'];
         $user_id = $user['id'];
 
-        $carts = Cart::where('user_id', $user_id)->get();
+        $carts = User::find($user_id)->carts;
         $carts->load('product');
 
         return response()->json([
@@ -94,6 +111,18 @@ class UserController extends Controller
     public function add_to_cart(Request $request) {
         $user = $request['userauth'];
         $user_id = $user['id'];
+
+        $v = Validator::make($request->all(), [
+            'product_id' => 'required|integer',
+            'quantity' => 'required|integer',
+        ]);
+
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Bad request!'
+            ], 400);
+        }
 
         $product_id = $request['product_id'];
         $quantity = $request['quantity'];
@@ -108,9 +137,34 @@ class UserController extends Controller
 
         $cart = Cart::where('user_id', $user_id)->where('product_id', $product_id)->first();
         if ($cart) {
+            // check if quantity is available
+            if ($cart->quantity + $quantity > $product->stock) {
+                return response()->json([
+                    'statusCode' => 400,
+                    'message' => 'Quantity not available!'
+                ], 400);
+            }
+
+            if ($cart->quantity + $quantity == 0) {
+                $cart->delete();
+
+                return response()->json([
+                    'statusCode' => 200,
+                    'message' => 'Product removed from cart successfully!'
+                ], 200);
+            }
+
             $cart->quantity += $quantity;
             $cart->save();
         } else {
+            // check if quantity is available
+            if ($quantity > $product->stock) {
+                return response()->json([
+                    'statusCode' => 400,
+                    'message' => 'Quantity not available!'
+                ], 400);
+            }
+
             $cart = Cart::create([
                 'user_id' => $user_id,
                 'product_id' => $product_id,
@@ -125,7 +179,7 @@ class UserController extends Controller
         ], 200);
     }
 
-    public function remote_from_cart(Request $request, $id) {
+    public function remove_from_cart(Request $request, $id) {
         $user = $request['userauth'];
         $user_id = $user['id'];
 

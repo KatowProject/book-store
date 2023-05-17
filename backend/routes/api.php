@@ -36,12 +36,12 @@ Route::middleware('api.user')->group(function() {
 
     Route::prefix('/users')->group(function() {
         Route::get('/me', 'App\Http\Controllers\UserController@get_me');
-        Route::put('/{id}', 'App\Http\Controllers\UserController@update_user');
+        Route::put('/me', 'App\Http\Controllers\UserController@update_me');
     });
 
     Route::get('/get-cart', 'App\Http\Controllers\UserController@get_cart');
     Route::post('/add-to-cart', 'App\Http\Controllers\UserController@add_to_cart');
-    Route::post('/remove-from-cart', 'App\Http\Controllers\UserController@remove_from_cart');
+    Route::delete('/remove-from-cart/{id}', 'App\Http\Controllers\UserController@remove_from_cart');
 });
 
 Route::middleware('api.admin')->group(function() {
