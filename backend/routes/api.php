@@ -29,14 +29,19 @@ Route::post('/register', 'App\Http\Controllers\AuthController@register');
 Route::post('/login', 'App\Http\Controllers\AuthController@login');
 
 Route::middleware('api.user')->group(function() {
-    Route::prefix('/user')->group(function() {
-        Route::get('/', function(Request $request) {
-            return response()->json([
-                'statusCode' => 200,
-                'message' => 'Welcome to the API!'
-            ], 200);
-        });
+    Route::prefix('/products')->group(function() {
+        Route::get('/', 'App\Http\Controllers\UserController@get_all_products');
+        Route::get('/{id}', 'App\Http\Controllers\UserController@get_product');
     });
+
+    Route::prefix('/users')->group(function() {
+        Route::get('/me', 'App\Http\Controllers\UserController@get_me');
+        Route::put('/{id}', 'App\Http\Controllers\UserController@update_user');
+    });
+
+    Route::get('/get-cart', 'App\Http\Controllers\UserController@get_cart');
+    Route::post('/add-to-cart', 'App\Http\Controllers\UserController@add_to_cart');
+    Route::post('/remove-from-cart', 'App\Http\Controllers\UserController@remove_from_cart');
 });
 
 Route::middleware('api.admin')->group(function() {

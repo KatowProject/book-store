@@ -20,9 +20,9 @@ class CreateOrdersTable extends Migration
             $table ->string("post_code");
             $table ->string("total");
             $table ->string("payment_method");
-            $table ->string("order_id");
             $table ->enum("status", ["pending", "processing", "completed", "decline", "on delivery"])->default("pending");
             $table ->bigInteger("user_id")->unsigned();
+            $table ->foreign("user_id")->references("id")->on("users")->onDelete("cascade");
             $table->timestamps();
         });
     }

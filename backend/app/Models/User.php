@@ -50,4 +50,9 @@ class User extends Authenticatable
     {
         $this->attributes['password'] = bcrypt($password);
     }
+
+    public function orders()
+    {
+        return $this->hasManyThrough(Order::class, OrderProduct::class, 'user_id', 'id', 'id', 'order_id');
+    }
 }
