@@ -87,6 +87,7 @@ export class LoginPage implements OnInit {
       }
 
       localStorage.setItem('token', data.data.token);
+      localStorage.setItem('user_id', data.data.user_id);
       loading.dismiss();
 
       this.alertController.create({

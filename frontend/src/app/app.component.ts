@@ -37,6 +37,7 @@ export class AppComponent {
           text: 'OK',
           handler: () => {
             localStorage.removeItem('token');
+            localStorage.removeItem('user_id');
 
             this.route.navigate(['/login']);
           }

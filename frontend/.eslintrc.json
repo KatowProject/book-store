@@ -1,11 +1,19 @@
 {
   "root": true,
-  "ignorePatterns": ["projects/**/*"],
+  "ignorePatterns": [
+    "projects/**/*"
+  ],
   "overrides": [
     {
-      "files": ["*.ts"],
+      "files": [
+        "*.ts"
+      ],
       "parserOptions": {
-        "project": ["tsconfig.json"],
+        "project": [
+          "tsconfig.json",
+        ],
+        "tsconfigRootDir": "src",
+        "sourceType": "module",
         "createDefaultProgram": true
       },
       "extends": [
@@ -16,7 +24,10 @@
         "@angular-eslint/component-class-suffix": [
           "error",
           {
-            "suffixes": ["Page", "Component"]
+            "suffixes": [
+              "Page",
+              "Component"
+            ]
           }
         ],
         "@angular-eslint/component-selector": [
@@ -38,9 +49,16 @@
       }
     },
     {
-      "files": ["*.html"],
-      "extends": ["plugin:@angular-eslint/template/recommended"],
-      "rules": {}
+      "files": [
+        "*.html"
+      ],
+      "extends": [
+        "plugin:@angular-eslint/template/recommended"
+      ],
+      "rules": {
+        // disable all rules
+        "@angular-eslint/template/no-negated-async": "off"
+      }
     }
   ]
 }

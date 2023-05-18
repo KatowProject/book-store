@@ -1,0 +1,60 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button text="Back" icon="caret-back"></ion-back-button>
+    </ion-buttons>
+    <ion-title>Cart</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-content>
+      <ion-list *ngFor="let item of data">
+        <ion-item>
+          <ion-thumbnail slot="start">
+            <img alt="item.product.name" src="{{ item.product.image }}">
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ item.product.name }}</h2>
+          </ion-label>
+          <!-- quantity -->
+          <ion-buttons slot="end">
+            <ion-button color="primary" size="small" (click)="decreaseQuantity(item)">
+              <ion-icon slot="icon-only" name="remove-outline"></ion-icon>
+            </ion-button>
+            <ion-button color="primary" size="small" disabled="true" id="product-{{ item.product.id }}">
+              {{ item.quantity }}
+            </ion-button>
+            <ion-button color="primary" size="small" (click)="increaseQuantity(item)">
+              <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+            </ion-button>
+          </ion-buttons>
+          <!-- button remove -->
+          <ion-button slot="end" color="danger" size="small">
+            <ion-icon slot="icon-only" name="trash"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- bottom total price -->
+  <ion-card>
+    <ion-card-content>
+      <ion-row>
+        <ion-col>
+          <ion-text color="primary" class="font-bold">Total Price</ion-text>
+        </ion-col>
+        <ion-col class="ion-text-right">
+          <ion-text color="primary" class="font-bold"> {{ total | currency: 'Rp': 'symbol' }}</ion-text>
+        </ion-col>
+      </ion-row>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- button place order -->
+  <ion-button expand="block" color="primary" (click)="ModalPlaceOrder()" style="margin:16px;">
+    Place Order
+  </ion-button>
+</ion-content>

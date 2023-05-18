@@ -92,4 +92,42 @@ export class FolderPage implements OnInit {
       });
     }
   }
+
+  async addToCart(item: any) {
+    return new Promise(async (resolve, reject) => {
+      try {
+        const res = await fetch(AppComponent.BASE_URL + 'api/add-to-cart', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ' + localStorage.getItem('token')
+          },
+          body: JSON.stringify({
+            product_id: item.id,
+            quantity: 1,
+            user_id: localStorage.getItem('user_id')
+          })
+        });
+
+        const data = await res.json();
+        if (data.statusCode === 200) {
+          this.alertController.create({
+            header: 'Success',
+            message: 'Success add to cart',
+            buttons: ['OK']
+          }).then(alert => {
+            alert.present();
+          });
+        }
+      } catch (err: any) {
+        this.alertController.create({
+          header: 'Error',
+          message: err.message,
+          buttons: ['OK']
+        }).then(alert => {
+          alert.present();
+        });
+      }
+    });
+  }
 }

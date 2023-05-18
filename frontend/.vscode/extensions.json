@@ -1,5 +1,9 @@
 {
-    "recommendations": [
-      "ionic.ionic"
-    ]
+  "recommendations": [
+    "ionic.ionic"
+  ],
+  "eslint.workingDirectories": [
+    "backend",
+    "frontend"
+  ]
 }
