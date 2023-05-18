@@ -26,7 +26,7 @@
             <ion-router-link [routerLink]="['/productdetail', item.id]">
               <img alt="{{ item.name }}" src="{{ item.image }}" />
               <ion-card-header>
-                <h4 class="ion-text-center font-bold">
+                <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
                   {{ item.name }}
                 </h4>
               </ion-card-header>
@@ -40,11 +40,20 @@
                   </ion-text>
                 </ion-col>
               </ion-row>
+
+              <!-- stock -->
+              <ion-row>
+                <ion-col class="ion-text-center">
+                  <ion-text color="danger" class="font-bold">
+                    Stock: {{ item.stock }}
+                  </ion-text>
+                </ion-col>
+              </ion-row>
             </ion-card-content>
 
             <ion-row>
               <ion-col class="ion-text-center" style="padding-bottom: 0px;">
-                <ion-button color="primary" size="block" (click)="addToCart(item)">
+                <ion-button color="primary" size="block" (click)="addToCart(item)" [disabled]="item.stock === 0">
                   <ion-icon name="cart-outline"></ion-icon>
                   &nbsp;Add
                 </ion-button>

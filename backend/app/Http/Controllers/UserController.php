@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Cart;
 use App\Models\Order;
+use App\Models\OrderProduct;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -196,6 +197,65 @@ class UserController extends Controller
         return response()->json([
             'statusCode' => 200,
             'message' => 'Cart removed successfully!'
+        ], 200);
+    }
+
+    public function place_order(Request $request) {
+        $user = $request['userauth'];
+        $user_id = $user['id'];
+
+        $data = $request->all();
+        $v = Validator::make($data, [
+            'name' => 'required|string',
+            'address' => 'required|string',
+            'phone_number' => 'required|string',
+            'post_code' => 'required|string',
+            'payment_method' => 'required|string|in:cod,transfer',
+        ]);
+
+        if ($v->fails()) {
+            return response()->json([
+                'statusCode' => 400,
+                'message' => 'Bad Request',
+            ], 400);
+        }
+
+        $order = new Order();
+        $order->fill($data);
+
+        // get total price
+        $carts = User::find($user_id)->carts;
+        $carts->load('product');
+
+        $total_price = 0;
+        foreach ($carts as $cart) $total_price += $cart->quantity * $cart->product->price;
+
+        $order->total = $total_price;
+        $order->user_id = $user_id;
+
+        $order->save();
+
+        // create order products
+        foreach ($carts as $cart) {
+            $orderProduct = new OrderProduct();
+            $orderProduct->order_id = $order->id;
+            $orderProduct->product_id = $cart->product_id;
+            $orderProduct->quantity = $cart->quantity;
+            $orderProduct->save();
+
+            // update product stock
+            $product = Product::find($cart->product_id);
+            $product->stock -= $cart->quantity;
+            $product->save();
+
+            // delete cart
+            $cart->delete();
+        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Order placed successfully!',
+            'data' => $order
         ], 200);
     }
 }

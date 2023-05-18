@@ -1,16 +1,78 @@
 <ion-header>
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-button color="medium" (click)="cancel()">Cancel</ion-button>
+      <ion-back-button (click)="cancel()" default-href="#"></ion-back-button>
     </ion-buttons>
-    <ion-title>Welcome</ion-title>
-    <ion-buttons slot="end">
-      <ion-button (click)="confirm()" [strong]="true">Confirm</ion-button>
-    </ion-buttons>
+
+    <ion-title>Place Order</ion-title>
   </ion-toolbar>
 </ion-header>
+
 <ion-content class="ion-padding">
-  <ion-item>
-    <ion-input labelPlacement="stacked" label="Enter your name" [(ngModel)]="name"></ion-input>
-  </ion-item>
+  <!-- product list -->
+  <ion-card>
+    <ion-card-content>
+      <ion-list *ngFor="let item of data">
+        <ion-item>
+          <ion-thumbnail slot="start">
+            <img alt="item.product.name" src="{{ item.product.image }}">
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ item.product.name }}</h2>
+          </ion-label>
+          <br>
+        </ion-item>
+
+        <ion-item>
+          <!-- text quantity with price -->
+          <ion-text color="primary" slot="start" class="font-bold">
+            {{ item.quantity }} x {{ item.product.price | currency: 'Rp': 'symbol' }}
+          </ion-text>
+
+          <!-- total price -->
+          <ion-text color="primary" slot="end" class="font-bold">
+            {{ item.total | currency: 'Rp': 'symbol' }}
+          </ion-text>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <ion-card-content>
+      <ion-item>
+        <ion-input labelPlacement="stacked" label="Name" [(ngModel)]="order.name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input labelPlacement="stacked" label="Address" [(ngModel)]="order.address"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input labelPlacement="stacked" label="Post Code" [(ngModel)]="order.post_code"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input labelPlacement="stacked" label="Phone Number" [(ngModel)]="order.phone_number"></ion-input>
+      </ion-item>
+
+      <!-- payment method -->
+      <ion-item>
+        <ion-label>Payment Method</ion-label>
+        <ion-select [(ngModel)]="order.payment_method">
+          <ion-select-option value="cash">Cash</ion-select-option>
+          <ion-select-option value="transfer">Transfer</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <!-- total -->
+      <ion-item>
+        <ion-label>Total</ion-label>
+        <ion-text color="primary" slot="end" class="font-bold">{{ order.total | currency: 'Rp': 'symbol' }}</ion-text>
+      </ion-item>
+
+      <br>
+      <ion-button color="primary" (click)="confirm()" expand="block">Checkout</ion-button>
+    </ion-card-content>
+  </ion-card>
 </ion-content>

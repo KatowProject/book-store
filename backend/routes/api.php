@@ -42,6 +42,8 @@ Route::middleware('api.user')->group(function() {
     Route::get('/get-cart', 'App\Http\Controllers\UserController@get_cart');
     Route::post('/add-to-cart', 'App\Http\Controllers\UserController@add_to_cart');
     Route::delete('/remove-from-cart/{id}', 'App\Http\Controllers\UserController@remove_from_cart');
+
+    Route::post('/place-order', 'App\Http\Controllers\UserController@place_order');
 });
 
 Route::middleware('api.admin')->group(function() {

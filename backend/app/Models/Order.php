@@ -15,9 +15,14 @@ class Order extends Model
      * The attributes that are mass assignable.
      */
     protected $fillable = [
-        'user_id',
-        'total_price',
-        'status'
+        'name',
+        'address',
+        'phone_number',
+        'post_code',
+        'total',
+        'payment_method',
+        'status',
+        'user_id'
     ];
 
     /**

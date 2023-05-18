@@ -1,7 +1,7 @@
 <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-buttons slot="start">
-      <ion-back-button text="Back" icon="caret-back"></ion-back-button>
+      <ion-back-button icon="caret-back" default-href="#" (click)="back()"></ion-back-button>
     </ion-buttons>
     <ion-title>Cart</ion-title>
   </ion-toolbar>
@@ -18,8 +18,9 @@
           <ion-label>
             <h2>{{ item.product.name }}</h2>
           </ion-label>
-          <!-- quantity -->
-          <ion-buttons slot="end">
+        </ion-item>
+        <ion-item><!-- quantity -->
+          <ion-buttons>
             <ion-button color="primary" size="small" (click)="decreaseQuantity(item)">
               <ion-icon slot="icon-only" name="remove-outline"></ion-icon>
             </ion-button>
@@ -54,7 +55,8 @@
   </ion-card>
 
   <!-- button place order -->
-  <ion-button expand="block" color="primary" (click)="ModalPlaceOrder()" style="margin:16px;">
+  <ion-button expand="block" color="primary" (click)="ModalPlaceOrder()" style="margin:16px;"
+    [disabled]="placeOrderDisabled">
     Place Order
   </ion-button>
 </ion-content>

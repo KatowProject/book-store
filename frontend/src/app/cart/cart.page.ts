@@ -1,4 +1,4 @@
-import { AlertController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { AppComponent } from '../app.component';
 import { PlaceorderModalComponent } from '../placeorder-modal/placeorder-modal.component';
@@ -11,8 +11,13 @@ import { PlaceorderModalComponent } from '../placeorder-modal/placeorder-modal.c
 export class CartPage implements OnInit {
   data: any;
   total = 0;
+  placeOrderDisabled = true;
 
-  constructor(private alertController: AlertController, private modalController: ModalController) { }
+  constructor(
+    private alertController: AlertController,
+    private modalController: ModalController,
+    private loadingController: LoadingController
+  ) { }
 
   ngOnInit() {
     this.getAllProductOnCart();
@@ -20,27 +25,42 @@ export class CartPage implements OnInit {
 
   async getAllProductOnCart() {
     try {
+      const loading = await this.loadingController.create({
+        message: 'Loading...'
+      });
+      await loading.present();
+
+
       const res = await fetch(AppComponent.BASE_URL + 'api/get-cart', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
       });
       const data = await res.json();
-      if (data.statusCode === 200) {
-        this.data = data.data;
+      this.data = data.data;
 
-        for (const item of this.data) {
-          item.total = item.product.price * item.quantity;
-          item.product.image = AppComponent.BASE_URL + 'images/' + item.product.image;
+      if (data.statusCode !== 200) return this.alertController.create({
+        header: 'Error',
+        message: this.data.message,
+        buttons: ['OK']
+      }).then(alert => {
+        alert.present();
+      });
 
-          // if name of product is more than 6 character, then add ... at the end of the name
-          if (item.product.name.length > 6) {
-            item.product.name = item.product.name.substring(0, 6) + '...';
-          }
+      if (this.data.length > 0) this.placeOrderDisabled = false;
+      for (const item of this.data) {
+        item.total = item.product.price * item.quantity;
+        item.product.image = AppComponent.BASE_URL + 'images/' + item.product.image;
 
-          this.total += item.total;
+        // if name of product is more than 6 character, then add ... at the end of the name
+        if (item.product.name.length > 25) {
+          item.product.name = item.product.name.substring(0, 25) + '...';
         }
+
+        this.total += item.total;
       }
+
+      await loading.dismiss();
     } catch (err: any) {
       console.log(err.message);
     }
@@ -111,11 +131,19 @@ export class CartPage implements OnInit {
   }
 
   async ModalPlaceOrder() {
+    // set data to pass to modal
     const modal = await this.modalController.create({
       component: PlaceorderModalComponent,
+      componentProps: {
+        total: this.total,
+        data: this.data
+      }
     });
 
     modal.present();
   }
 
+  back() {
+    window.history.back();
+  }
 }
