@@ -112,6 +112,51 @@
           </ion-list>
         </ion-col>
       </ion-row>
+
+      <ion-row *ngIf="folder === 'Products'">
+        <ion-col *ngFor="let item of data" size="6">
+          <ion-card>
+            <img alt="{{ item.name }}" src="{{ item.image }}" />
+            <ion-card-header>
+              <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
+                {{ item.name }}
+              </h4>
+            </ion-card-header>
+            <!-- hr tailwind -->
+            <hr class="border-b-2 border-gray-400" />
+            <ion-card-content>
+              <!-- price idr Rp. currency with box -->
+              <ion-row>
+                <ion-col class="ion-text-center">
+                  <ion-text color="primary" class="font-bold">
+                    {{ item.price | currency: 'Rp': 'symbol' }}
+                  </ion-text>
+                </ion-col>
+              </ion-row>
+
+              <!-- stock -->
+              <ion-row>
+                <ion-col class="ion-text-center">
+                  <ion-text color="danger" class="font-bold">
+                    Stock: {{ item.stock }}
+                  </ion-text>
+                </ion-col>
+              </ion-row>
+            </ion-card-content>
+
+            <ion-row>
+              <!-- edit product -->
+              <ion-col class="ion-text-center" style="padding-bottom: 0px;">
+                <ion-button color="primary" size="block" (click)="editProductModal(item)">
+                  <ion-icon name="create-outline"></ion-icon>
+                  &nbsp;Edit
+                </ion-button>
+              </ion-col>
+            </ion-row>
+
+          </ion-card>
+        </ion-col>
+      </ion-row>
     </ion-grid>
   </div>
   <!-- <ion-header collapse="condense">

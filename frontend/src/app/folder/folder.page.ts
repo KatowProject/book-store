@@ -2,8 +2,9 @@ import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { AppComponent } from '../app.component';
-import { OrderdetailModalComponent } from '../orderdetail-modal/orderdetail-modal.component';
-import { ProductDetailModalComponent } from '../product-detail-modal/product-detail-modal.component';
+import { OrderdetailModalComponent } from '../user/orderdetail-modal/orderdetail-modal.component';
+import { ProductDetailModalComponent } from '../user/product-detail-modal/product-detail-modal.component';
+import { EditProductModalComponent } from '../admin/edit-product-modal/edit-product-modal.component';
 
 @Component({
   selector: 'app-folder',
@@ -55,6 +56,9 @@ export class FolderPage implements OnInit {
         this.getOrders();
         break;
 
+      case 'products':
+        this.getAllProductsAdmin();
+        break
       default:
         this.onLoad.dismiss();
     }
@@ -65,13 +69,6 @@ export class FolderPage implements OnInit {
   async checkToken() {
     const token = localStorage.getItem('token');
     if (!token) {
-      this.alertController.create({
-        header: 'Error',
-        message: 'You must login first',
-        buttons: ['OK']
-      }).then(alert => {
-        alert.present();
-      });
       this.router.navigate(['/login']);
       return false;
     }
@@ -256,6 +253,34 @@ export class FolderPage implements OnInit {
         alert.present();
       });
     }
+  }
+
+  async getAllProductsAdmin() {
+    const res = await fetch(AppComponent.BASE_URL + 'api/admin/products', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+
+    const json = await res.json();
+    this.data = json.data;
+
+    for (const item of this.data) {
+      item.image = AppComponent.BASE_URL + 'images/' + item.image;
+    }
+
+    this.onLoad.dismiss();
+  }
+
+  async editProductModal(item: any) {
+    const modal = await this.modalController.create({
+      component: EditProductModalComponent,
+      componentProps: {
+        'item': item
+      }
+    });
+
+    return await modal.present();
   }
 
   ngOnDestroy() {

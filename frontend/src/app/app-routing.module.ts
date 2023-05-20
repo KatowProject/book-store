@@ -12,6 +12,11 @@ const routes: Routes = [
     'redirectTo': 'folder/Home',
   },
   {
+    path: 'folder/Admin',
+    redirectTo: 'folder/Products',
+    pathMatch: 'full'
+  },
+  {
     path: 'folder/:id',
     loadChildren: () => import('./folder/folder.module').then(m => m.FolderPageModule)
   },
@@ -20,12 +25,8 @@ const routes: Routes = [
     loadChildren: () => import('./login/login.module').then(m => m.LoginPageModule)
   },
   {
-    path: 'productdetail/:id',
-    loadChildren: () => import('./productdetail/productdetail.module').then(m => m.ProductdetailPageModule)
-  },
-  {
     path: 'cart',
-    loadChildren: () => import('./cart/cart.module').then(m => m.CartPageModule)
+    loadChildren: () => import('./user/cart/cart.module').then(m => m.CartPageModule)
   },
 ];
 

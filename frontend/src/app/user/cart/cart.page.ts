@@ -1,6 +1,6 @@
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
-import { AppComponent } from '../app.component';
+import { AppComponent } from '../../app.component';
 import { PlaceorderModalComponent } from '../placeorder-modal/placeorder-modal.component';
 
 @Component({

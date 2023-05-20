@@ -1,0 +1,60 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="cancel()" default-href="#"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Edit Product</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Product Information</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-input label="Product Name" labelPlacement="floating" placeholder="Product Name"
+          [(ngModel)]="form.name"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input label="Price" labelPlacement="floating" placeholder="Price" [(ngModel)]="form.price"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input label="Stock" labelPlacement="floating" placeholder="Stock" [(ngModel)]="form.stock"></ion-input>
+      </ion-item>
+
+      <ion-item>
+        <ion-input label="Description" labelPlacement="floating" placeholder="Description"
+          [(ngModel)]="form.description"></ion-input>
+      </ion-item>
+
+      <!-- image -->
+
+      <ion-item>
+        <ion-icon lazy="true" slot="start" name="image"></ion-icon>
+        <input type="file" id="file-input" accept="image/png, image/jpeg" (change)="loadImage($event)">
+      </ion-item>
+
+      <ion-item>
+        <ion-select label="Category" label-placement="floating" placeholder="Select One" [(ngModel)]="form.category_id">
+          <ion-select-option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-item>
+        <ion-select label="Status" label-placement="floating" placeholder="Select One" [(ngModel)]="form.status">
+          <ion-select-option value="1">Active</ion-select-option>
+          <ion-select-option value="0">Inactive</ion-select-option>
+        </ion-select>
+      </ion-item>
+
+      <ion-button expand="block" (click)="save()">Save</ion-button>
+
+    </ion-card-content>
+  </ion-card>
+</ion-content>
