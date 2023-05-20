@@ -36,13 +36,17 @@ export class LoginPage implements OnInit {
       const data = await res.json();
 
       if (data.statusCode === 200) {
-        this.router.navigate(['/folder/Home']);
-        return resolve(true);
+        // check role
+        if (data.data.role === 'admin')
+          window.location.href = '/admin';
+        else
+          window.location.href = '/folder/Home';
+
       }
     });
   }
 
-  async login() {
+  async login(isAdmin = false) {
     try {
       if (!this.form.username || !this.form.password) {
         this.alertController.create({
@@ -70,9 +74,10 @@ export class LoginPage implements OnInit {
           email: this.form.username,
           password: this.form.password
         })
-      })
+      });
 
       const data = await res.json();
+
       if (data.statusCode != 200) {
         this.alertController.create({
           header: 'Login Failed',
@@ -86,8 +91,37 @@ export class LoginPage implements OnInit {
         return;
       }
 
+      if (isAdmin && data.data.role !== 'admin') {
+        this.alertController.create({
+          header: 'Login Failed',
+          message: 'You are not admin',
+          buttons: ['OK']
+        }).then(alert => {
+          alert.present();
+        });
+
+        loading.dismiss();
+
+        return;
+      }
+
+      // check role
+      if (!isAdmin && data.data.role === 'admin') {
+        this.alertController.create({
+          header: 'Login Failed',
+          message: 'You are not user',
+          buttons: ['OK']
+        }).then(alert => {
+          alert.present();
+        });
+
+        loading.dismiss();
+
+        return;
+      }
+
       localStorage.setItem('token', data.data.token);
-      localStorage.setItem('user_id', data.data.user_id);
+      localStorage.setItem('user_id', data.data.id);
       loading.dismiss();
 
       this.alertController.create({
@@ -98,11 +132,83 @@ export class LoginPage implements OnInit {
         alert.present();
       });
 
-      window.location.href = '/folder/Home';
+      if (isAdmin)
+        window.location.href = '/folder/Admin';
+      else
+        window.location.href = '/folder/Home';
 
     } catch (err) {
       this.alertController.create({
         header: 'Login Failed',
+        message: 'Username or password is incorrect',
+        buttons: ['OK']
+      }).then(alert => {
+        alert.present();
+      });
+    }
+  }
+
+  async register() {
+    try {
+      if (!this.form.username || !this.form.password) {
+        this.alertController.create({
+          header: 'Register Failed',
+          message: 'Username or password is must be filled',
+          buttons: ['OK']
+        }).then(alert => {
+          alert.present();
+        });
+        return;
+      }
+
+      const loading = await this.loadingController.create({
+        message: 'Loading...'
+      });
+
+      loading.present();
+
+      const res = await fetch(AppComponent.BASE_URL + 'api/register', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          email: this.form.username,
+          password: this.form.password
+        })
+      })
+
+      const data = await res.json();
+      if (data.statusCode != 200) {
+        this.alertController.create({
+          header: 'Register Failed',
+          message: 'Username or password is incorrect',
+          buttons: ['OK']
+        }).then(alert => {
+          alert.present();
+        });
+
+        loading.dismiss();
+        return;
+      }
+
+      localStorage.setItem('token', data.data.token);
+      localStorage.setItem('user_id', data.data.id);
+      loading.dismiss();
+
+      this.alertController.create({
+        header: 'Register Success',
+        message: 'You have been registered',
+        buttons: ['OK']
+      }).then(alert => {
+        alert.present();
+      });
+
+      window.location.href = '/folder/Home';
+
+    } catch (err) {
+      this.alertController.create({
+        header: 'Register Failed',
         message: 'Username or password is incorrect',
         buttons: ['OK']
       }).then(alert => {

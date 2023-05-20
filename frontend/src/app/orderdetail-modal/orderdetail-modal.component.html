@@ -1,0 +1,120 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="cancel()" default-href="#"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Place Order</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <!-- product list -->
+  <ion-card>
+    <!-- title -->
+    <ion-card-header>
+      <ion-card-title>Product List</ion-card-title>
+    </ion-card-header>
+    <ion-card-content>
+      <ion-list *ngFor="let p of item.order_products">
+        <ion-item>
+          <ion-thumbnail slot="start">
+            <img alt="p.product.name" src="{{ p.product.image }}">
+          </ion-thumbnail>
+          <ion-label>
+            <h2>{{ p.product.name }}</h2>
+          </ion-label>
+          <br>
+        </ion-item>
+
+        <ion-item>
+          <!-- text quantity with price -->
+          <ion-text color="primary" slot="start" class="font-bold">
+            {{ p.quantity }} x {{ p.product.price | currency: 'Rp': 'symbol' }}
+          </ion-text>
+
+          <!-- total price -->
+          <ion-text color="primary" slot="end" class="font-bold">
+            {{ p.total | currency: 'Rp': 'symbol' }}
+          </ion-text>
+        </ion-item>
+      </ion-list>
+    </ion-card-content>
+  </ion-card>
+
+  <ion-card>
+    <!-- title -->
+    <ion-card-header>
+      <ion-card-title>Order Information</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-label>
+          <h5>Name :</h5>
+          <p>{{ item.name }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>
+          <h5>Address :</h5>
+          <p>{{ item.address }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>
+          <h5>Post Code :</h5>
+          <p>{{ item.post_code }}</p>
+        </ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>
+          <h5>Phone Number :</h5>
+          <p>{{ item.phone_number }}</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- payment method -->
+      <ion-item>
+        <ion-label>
+          <h5>Payment Method :</h5>
+          <p>{{ item.payment_method }}</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- total price -->
+      <ion-item>
+        <ion-label>
+          <h5>Total Price :</h5>
+          <p>{{ item.total | currency: 'Rp': 'symbol' }}</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- status -->
+      <ion-item>
+        <ion-label>
+          <h5>Status :</h5>
+          <p>{{ item.status }}</p>
+        </ion-label>
+      </ion-item>
+
+      <!-- datetime -->
+      <ion-item>
+        <ion-label>
+          <h5>Date :</h5>
+          <p>{{ item.created_at | date: 'dd/MM/yyyy HH:mm' }}</p>
+        </ion-label>
+      </ion-item>
+    </ion-card-content>
+  </ion-card>
+
+  <!-- button back -->
+  <ion-button expand="block" color="primary" (click)="cancel()" style="padding-left: 2%; padding-right: 2%;">
+    Back
+  </ion-button>
+
+  <br>
+</ion-content>

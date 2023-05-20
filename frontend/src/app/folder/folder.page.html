@@ -6,8 +6,9 @@
     <ion-title>{{ folder }}</ion-title>
 
     <!-- cart with number -->
-    <ion-buttons slot="end">
-      <ion-button routerLink="/cart">
+    <!-- show after load -->
+    <ion-buttons slot="end" *ngIf="isLoaded">
+      <ion-button routerLink="/cart" *ngIf="!isAdministrator">
         <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
         <ion-badge color="danger" *ngIf="cart > 0">{{ cart }}</ion-badge>
       </ion-button>
@@ -22,15 +23,14 @@
       <ion-row *ngIf="folder === 'Home'">
         <ion-col *ngFor="let item of data" size="6">
           <ion-card>
-            <!-- clickable -->
-            <ion-router-link [routerLink]="['/productdetail', item.id]">
-              <img alt="{{ item.name }}" src="{{ item.image }}" />
-              <ion-card-header>
-                <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
-                  {{ item.name }}
-                </h4>
-              </ion-card-header>
-            </ion-router-link>
+            <img alt="{{ item.name }}" src="{{ item.image }}" />
+            <ion-card-header>
+              <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
+                {{ item.name }}
+              </h4>
+            </ion-card-header>
+            <!-- hr tailwind -->
+            <hr class="border-b-2 border-gray-400" />
             <ion-card-content>
               <!-- price idr Rp. currency with box -->
               <ion-row>
@@ -58,8 +58,58 @@
                   &nbsp;Add
                 </ion-button>
               </ion-col>
+
+              <!-- detail -->
+              <ion-col class="ion-text-center" style="padding-top: 0px;">
+                <ion-button color="secondary" size="block" (click)="productDetail(item)">
+                  <ion-icon name="eye-outline"></ion-icon>
+                  &nbsp;Detail
+                </ion-button>
+              </ion-col>
             </ion-row>
           </ion-card>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="folder === 'Orders'">
+        <ion-col *ngFor="let item of data" size="12">
+          <ion-list style="border-radius: 5px;">
+            <!-- thumbnail, title and status order -->
+            <ion-row>
+              <ion-col size="12" style="padding-left: 10px; padding-right: 10px;">
+                <ion-item (click)="orderDetail(item)">
+                  <ion-thumbnail slot="start">
+                    <img alt="Silhouette of mountains" src="{{ item.order_products[0].product.image }}"
+                      style="border-radius: 5px;" />
+                  </ion-thumbnail>
+                  <ion-label>
+                    <h1 class="font-bold">{{ item.order_products[0].product.name }}</h1>
+                    <!-- total product secondary color-->
+                    <small color="dark">+{{ item.order_products.length - 1 }} produk lainnya</small>
+                  </ion-label>
+                  <br>
+                  <ion-badge slot="end" color="{{ item.indicator }}">
+                    {{ item.status }}
+                  </ion-badge>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12" style="padding-left: 10px;">
+                <ion-item>
+                  <ion-label>
+                    <h5 class="font-bold">Total</h5>
+                    <small color="dark">{{ item.total + ((item.total * 1.5) / 100) | currency: 'Rp': 'symbol' }}</small>
+                  </ion-label>
+
+                  <!-- button order detail -->
+                  <ion-button slot="end" color="primary" size="small" (click)="orderDetail(item)">
+                    <ion-icon name="eye-outline"></ion-icon>
+                    &nbsp;Detail
+                  </ion-button>
+                </ion-item>
+              </ion-col>
+            </ion-row>
+          </ion-list>
         </ion-col>
       </ion-row>
     </ion-grid>

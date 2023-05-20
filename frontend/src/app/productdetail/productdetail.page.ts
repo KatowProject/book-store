@@ -36,11 +36,13 @@ export class ProductdetailPage implements OnInit {
         });
         const data = await res.json();
 
+        console.log(data);
         if (data.statusCode === 200) {
           this.data = data.data;
           loading.dismiss();
           return resolve(true);
         }
+
       } catch (err: any) {
         this.alertController.create({
           header: 'Error',
@@ -51,5 +53,9 @@ export class ProductdetailPage implements OnInit {
         });
       }
     });
+  }
+
+  back() {
+    window.history.back();
   }
 }

@@ -100,6 +100,7 @@ class AuthController extends Controller
             'statusCode' => 200,
             'message' => 'OK',
             'data' => [
+                'id' => $user->id,
                 'name' => $user->name,
                 'role' => $user->role,
                 'token' => $jwt,

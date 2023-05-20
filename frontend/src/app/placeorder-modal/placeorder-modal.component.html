@@ -40,24 +40,24 @@
 
   <ion-card>
     <ion-card-content>
-      <ion-item>
+      <ion-item color="light" style="border-radius: 10px 10px 0 0;">
         <ion-input labelPlacement="stacked" label="Name" [(ngModel)]="order.name"></ion-input>
       </ion-item>
 
-      <ion-item>
+      <ion-item color="light">
         <ion-input labelPlacement="stacked" label="Address" [(ngModel)]="order.address"></ion-input>
       </ion-item>
 
-      <ion-item>
+      <ion-item color="light">
         <ion-input labelPlacement="stacked" label="Post Code" [(ngModel)]="order.post_code"></ion-input>
       </ion-item>
 
-      <ion-item>
+      <ion-item color="light">
         <ion-input labelPlacement="stacked" label="Phone Number" [(ngModel)]="order.phone_number"></ion-input>
       </ion-item>
 
       <!-- payment method -->
-      <ion-item>
+      <ion-item color="light" style="border-radius: 0 0 10px 10px;">
         <ion-label>Payment Method</ion-label>
         <ion-select [(ngModel)]="order.payment_method">
           <ion-select-option value="cash">Cash</ion-select-option>
@@ -65,10 +65,17 @@
         </ion-select>
       </ion-item>
 
+      <!-- tax 1.5% -->
+      <ion-item>
+        <ion-label>Tax (1.5%)</ion-label>
+        <ion-text color="primary" slot="end" class="font-bold">{{ (order.total * 1.5) / 100 | currency: 'Rp': 'symbol'
+          }}</ion-text>
+      </ion-item>
       <!-- total -->
       <ion-item>
         <ion-label>Total</ion-label>
-        <ion-text color="primary" slot="end" class="font-bold">{{ order.total | currency: 'Rp': 'symbol' }}</ion-text>
+        <ion-text color="primary" slot="end" class="font-bold">{{ order.total + ((order.total * 1.5) / 100) | currency:
+          'Rp': 'symbol' }}</ion-text>
       </ion-item>
 
       <br>

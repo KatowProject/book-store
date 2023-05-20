@@ -28,6 +28,23 @@ class UserAuth
 
             $decoded = JWT::decode($jwt, $key);
             if ($decoded->role !== 'user') {
+                // check url
+                $url = $request->url();
+                $url = explode('/', $url);
+                $url = $url[count($url) - 1];
+
+                // skip if url includes 'me'
+                if ($url === 'me') {
+                    $request->request->add([
+                        'userauth' => [
+                            'id' => $decoded->id,
+                            'name' => $decoded->name,
+                            'role' => $decoded->role,
+                        ]
+                    ]);
+                    return $next($request);
+                }
+
                 return response()->json([
                     'message' => 'Invalid token',
                     'statusCode' => 401,

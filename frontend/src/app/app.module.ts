@@ -8,11 +8,13 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { PlaceorderModalComponent } from './placeorder-modal/placeorder-modal.component';
 import { FormsModule } from '@angular/forms';
+import { OrderdetailModalComponent } from './orderdetail-modal/orderdetail-modal.component';
+import { ProductDetailModalComponent } from './product-detail-modal/product-detail-modal.component';
 
 @NgModule({
-  declarations: [AppComponent, PlaceorderModalComponent],
+  declarations: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, FormsModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent, PlaceorderModalComponent],
+  bootstrap: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent],
 })
 export class AppModule { }

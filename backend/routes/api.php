@@ -44,6 +44,11 @@ Route::middleware('api.user')->group(function() {
     Route::delete('/remove-from-cart/{id}', 'App\Http\Controllers\UserController@remove_from_cart');
 
     Route::post('/place-order', 'App\Http\Controllers\UserController@place_order');
+
+    Route::prefix('/orders')->group(function() {
+        Route::get('/', 'App\Http\Controllers\UserController@get_all_orders');
+        Route::get('/{id}', 'App\Http\Controllers\UserController@get_order');
+    });
 });
 
 Route::middleware('api.admin')->group(function() {

@@ -130,6 +130,22 @@ export class CartPage implements OnInit {
     }
   }
 
+  async removeFromCart(item: any) {
+    const res = await fetch(AppComponent.BASE_URL + `api/remove-from-cart/${item.id}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+
+    const data = await res.json();
+    if (data.statusCode === 200) {
+      // reset total
+      this.total = 0;
+      // get all product on cart
+      this.getAllProductOnCart();
+    }
+  }
   async ModalPlaceOrder() {
     // set data to pass to modal
     const modal = await this.modalController.create({

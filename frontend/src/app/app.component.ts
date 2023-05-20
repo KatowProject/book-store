@@ -9,19 +9,30 @@ import { AlertController } from '@ionic/angular';
 export class AppComponent {
   public me: any;
   public appPages = [
-    { title: 'Home', url: '/folder/Home', icon: 'home' },
+    // user pages
+    { title: 'Home', url: '/folder/Home', icon: 'home', role: 'user' },
+    { title: 'Orders', url: '/folder/Orders', icon: 'cart', role: 'user' },
+
+    // admin pages
+    { title: 'Products', url: '/folder/Products', icon: 'cube', role: 'admin' },
+    { title: 'Users', url: '/folder/Users', icon: 'people', role: 'admin' },
   ];
-  public labels = ['Family', 'Friends', 'Notes', 'Work', 'Travel', 'Reminders'];
 
   static BASE_URL = 'http://localhost:8000/';
 
   constructor(private route: Router, private alertController: AlertController) {
-
   }
 
-  ngOnInit() {
+  async ngOnInit() {
     console.log('BASE_URL', AppComponent.BASE_URL);
-    this.getMe();
+    const me = await this.getMe();
+
+    // filter appPages by role
+    this.appPages = this.appPages.filter(page => {
+      if (page.role === 'admin' && me.data.role === 'admin') return true;
+      if (page.role === 'user' && me.data.role === 'user') return true;
+      return false;
+    });
   }
 
   logout() {
@@ -60,5 +71,7 @@ export class AppComponent {
     if (data.statusCode === 200) {
       this.me = data.data;
     }
+
+    return data;
   }
 }

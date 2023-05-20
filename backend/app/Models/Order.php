@@ -34,10 +34,18 @@ class Order extends Model
     }
 
     /**
-     * Get the order products for the order.
+     * Get the order and product on table product.
      */
     public function orderProducts()
     {
         return $this->hasMany(OrderProduct::class);
+    }
+
+    /**
+     * Get the order products for the order.
+     */
+    public function products()
+    {
+        return $this->belongsToMany(Product::class, 'order_products', 'order_id', 'product_id');
     }
 }

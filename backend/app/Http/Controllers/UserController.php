@@ -13,8 +13,8 @@ use Illuminate\Support\Facades\Validator;
 class UserController extends Controller
 {
     public function get_all_products(Request $request) {
-        $products = Product::where('status', 'active')->get();
-
+        // sort by stock
+        $products = Product::where('status', 'active')->orderBy('stock', 'desc')->get();
         return response()->json([
             'statusCode' => 200,
             'message' => 'Success!',
@@ -256,6 +256,27 @@ class UserController extends Controller
             'statusCode' => 200,
             'message' => 'Order placed successfully!',
             'data' => $order
+        ], 200);
+    }
+
+    public function get_all_orders(Request $request) {
+        $user = $request['userauth'];
+        $user_id = $user['id'];
+
+        $orders = Order::where('user_id', $user_id)->get();
+        $orders->load('orderProducts');
+
+        // get product details
+        foreach ($orders as $order) {
+            foreach ($order->orderProducts as $orderProduct) {
+                $orderProduct->product = Product::find($orderProduct->product_id);
+            }
+        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success!',
+            'data' => $orders
         ], 200);
     }
 }

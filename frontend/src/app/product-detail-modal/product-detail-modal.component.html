@@ -1,0 +1,64 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="cancel()" default-href="#"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Product Detail</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <img alt="Silhouette of mountains" src={{item.image}} />
+    <ion-card-header>
+      <ion-card-title>{{ item.name }}</ion-card-title>
+      <ion-card-subtitle><b>{{ item.price | currency: 'Rp': 'symbol' }}</b></ion-card-subtitle>
+    </ion-card-header>
+
+    <ion-card-content>
+      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque optio earum error id ducimus repellendus qui
+      corrupti? Nam porro exercitationem aliquid blanditiis repudiandae sint sequi neque aut. Veniam, itaque veritatis.
+    </ion-card-content>
+
+    <!-- information book -->
+    <ion-list>
+      <ion-item>
+        <ion-label>Author</ion-label>
+        <ion-note slot="end">Author</ion-note>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Publisher</ion-label>
+        <ion-note slot="end">{{ item.publisher }}</ion-note>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Pages</ion-label>
+        <ion-note slot="end">{{ item.pages }}</ion-note>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Language</ion-label>
+        <ion-note slot="end">{{ item.language }}</ion-note>
+      </ion-item>
+    </ion-list>
+  </ion-card>
+  <br><br><br>
+  <ion-footer class="fixed-bottom">
+    <ion-button expand="block" (click)="addToCart(item)" style="border-radius: 10px; margin: 10px;"
+      *ngIf="item.stock > 0">
+      <!-- icon -->
+      <ion-icon name="cart-outline" slot="start"></ion-icon>
+      Add to Cart
+    </ion-button>
+
+    <!-- button out of stock -->
+    <ion-button expand="block" color="danger" style="border-radius: 10px; margin: 10px;" *ngIf="item.stock == 0">
+      <!-- icon -->
+      <ion-icon name="close-circle-outline" slot="start"></ion-icon>
+      Out of Stock
+    </ion-button>
+  </ion-footer>
+  <!-- on bottom screen, give button "add to cart" -->
+</ion-content>
