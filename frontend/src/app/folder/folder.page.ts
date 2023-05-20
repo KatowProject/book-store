@@ -64,7 +64,6 @@ export class FolderPage implements OnInit {
 
   async checkToken() {
     const token = localStorage.getItem('token');
-    this.router.navigate(['/login']);
     if (!token) {
       this.alertController.create({
         header: 'Error',
@@ -73,6 +72,7 @@ export class FolderPage implements OnInit {
       }).then(alert => {
         alert.present();
       });
+      this.router.navigate(['/login']);
       return false;
     }
     return true
