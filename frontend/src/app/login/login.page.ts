@@ -1,7 +1,8 @@
 import { Router } from '@angular/router';
 import { Component, OnInit } from '@angular/core';
 import { AppComponent } from '../app.component';
-import { AlertController, LoadingController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { RegisterModalComponent } from '../register-modal/register-modal.component';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -14,7 +15,7 @@ export class LoginPage implements OnInit {
     password: ''
   }
   appComponent: AppComponent;
-  constructor(private router: Router, private alertController: AlertController, private loadingController: LoadingController) {
+  constructor(private router: Router, private alertController: AlertController, private loadingController: LoadingController, private modalController: ModalController) {
     this.token = localStorage.getItem('token');
     this.appComponent = new AppComponent(router, alertController);
   }
@@ -143,9 +144,18 @@ export class LoginPage implements OnInit {
         message: 'Username or password is incorrect',
         buttons: ['OK']
       }).then(alert => {
+        this.loadingController.dismiss();
         alert.present();
       });
     }
+  }
+
+  async registerModal() {
+    const modal = await this.modalController.create({
+      component: RegisterModalComponent
+    });
+
+    modal.present();
   }
 
   async register() {

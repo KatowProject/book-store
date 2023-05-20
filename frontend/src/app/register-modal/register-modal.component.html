@@ -1,0 +1,29 @@
+<ion-content [fullscreen]="true">
+  <div id="container" (keyup.enter)="submit()">
+    <h1 class="ion-text-center font-bold">Register Book Store</h1>
+    <br>
+
+    <ion-item fill="outline">
+      <ion-label position="floating">Name</ion-label>
+      <ion-input [(ngModel)]="form.name" [ngModelOptions]="{standalone: true}" type="text" placeholder="Enter text"
+        required></ion-input>
+    </ion-item>
+
+    <br>
+
+    <ion-item fill="outline">
+      <ion-label position="floating">Email</ion-label>
+      <ion-input [(ngModel)]="form.email" [ngModelOptions]="{standalone: true}" type="email" placeholder="Enter text"
+        required></ion-input>
+    </ion-item>
+    <br>
+    <ion-item fill="outline">
+      <ion-label position="floating">Password</ion-label>
+      <ion-input [(ngModel)]="form.password" [ngModelOptions]="{standalone: true}" type="password"
+        placeholder="Enter text" required></ion-input>
+    </ion-item>
+    <br>
+    <ion-button (click)="submit()" color="secondary" expand="block"><ion-icon slot="start"
+        name="person-add-outline"></ion-icon>Register</ion-button>
+  </div>
+</ion-content>

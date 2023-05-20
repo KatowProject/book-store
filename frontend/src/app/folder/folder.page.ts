@@ -29,7 +29,8 @@ export class FolderPage implements OnInit {
   ) { }
 
   async ngOnInit() {
-    this.checkToken();
+    const check = await this.checkToken();
+    if (!check) return;
     this.folder = this.activatedRoute.snapshot.paramMap.get('id') as string;
     this.onLoad = await this.loadingController.create({
       message: 'Loading...',
@@ -63,6 +64,7 @@ export class FolderPage implements OnInit {
 
   async checkToken() {
     const token = localStorage.getItem('token');
+    this.router.navigate(['/login']);
     if (!token) {
       this.alertController.create({
         header: 'Error',
@@ -70,9 +72,10 @@ export class FolderPage implements OnInit {
         buttons: ['OK']
       }).then(alert => {
         alert.present();
-        this.router.navigate(['/login']);
       });
+      return false;
     }
+    return true
   }
 
   async getCartLength() {
@@ -232,14 +235,30 @@ export class FolderPage implements OnInit {
   }
 
   async getMe() {
-    const res = await fetch(AppComponent.BASE_URL + 'api/users/me', {
-      headers: {
-        'Authorization': 'Bearer ' + localStorage.getItem('token')
-      }
-    });
+    if (!localStorage.getItem('token')) return this.onLoad.dismiss();
+    try {
+      const res = await fetch(AppComponent.BASE_URL + 'api/users/me', {
+        headers: {
+          'Authorization': 'Bearer ' + localStorage.getItem('token')
+        }
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    return data.data;
+      return data.data;
+    } catch (err: any) {
+      this.onLoad.dismiss();
+      this.alertController.create({
+        header: 'Error',
+        message: err.message,
+        buttons: ['OK']
+      }).then(alert => {
+        alert.present();
+      });
+    }
+  }
+
+  ngOnDestroy() {
+    this.onLoad.dismiss();
   }
 }

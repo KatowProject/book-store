@@ -10,11 +10,12 @@ import { PlaceorderModalComponent } from './placeorder-modal/placeorder-modal.co
 import { FormsModule } from '@angular/forms';
 import { OrderdetailModalComponent } from './orderdetail-modal/orderdetail-modal.component';
 import { ProductDetailModalComponent } from './product-detail-modal/product-detail-modal.component';
+import { RegisterModalComponent } from './register-modal/register-modal.component';
 
 @NgModule({
-  declarations: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent],
+  declarations: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent, RegisterModalComponent],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, FormsModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent],
+  bootstrap: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent, RegisterModalComponent],
 })
 export class AppModule { }

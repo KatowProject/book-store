@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+#container {
+  @apply flex flex-col justify-center h-screen;
+  // padding: 0 0 0 0;
+  padding-left: 25px;
+  padding-right: 25px;
+}
