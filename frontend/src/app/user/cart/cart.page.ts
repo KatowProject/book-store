@@ -40,6 +40,7 @@ export class CartPage implements OnInit {
       const data = await res.json();
       this.data = data.data;
 
+
       if (data.statusCode !== 200) return this.alertController.create({
         header: 'Error',
         message: this.data.message,
@@ -48,7 +49,11 @@ export class CartPage implements OnInit {
         alert.present();
       });
 
-      if (this.data.length > 0) this.placeOrderDisabled = false;
+      if (this.data.length > 0)
+        this.placeOrderDisabled = false;
+      else
+        this.placeOrderDisabled = true;
+
       for (const item of this.data) {
         item.total = item.product.price * item.quantity;
         item.product.image = environment.BASE_URL + 'images/' + item.product.image;
@@ -147,6 +152,7 @@ export class CartPage implements OnInit {
       this.getAllProductOnCart();
     }
   }
+
   async ModalPlaceOrder() {
     // set data to pass to modal
     const modal = await this.modalController.create({
@@ -158,6 +164,15 @@ export class CartPage implements OnInit {
     });
 
     modal.present();
+
+    modal.onDidDismiss().then((data) => {
+      console.log(data);
+      if (data.data === 'success') {
+        // reset total
+        this.total = 0;
+        this.getAllProductOnCart();
+      }
+    });
   }
 
   back() {

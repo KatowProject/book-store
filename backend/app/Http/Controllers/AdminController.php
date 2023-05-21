@@ -3,9 +3,11 @@
 namespace App\Http\Controllers;
 
 use App\Models\Category;
+use App\Models\Order;
 use App\Models\Product;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
 
 class AdminController extends Controller
@@ -21,6 +23,9 @@ class AdminController extends Controller
             foreach ($product->orderProducts as $orderProduct) {
                 $product['sold_count'] += $orderProduct['quantity'];
             }
+
+            // image
+            $product['image'] = url('images/' . $product['image']);
 
             unset($product['orderProducts']);
         }
@@ -446,6 +451,101 @@ class AdminController extends Controller
                 'statusCode' => 500,
                 'message' => 'Internal server error'
             ], 500);
+        }
+    }
+
+    public function get_all_orders(Request $request) {
+        // sorting pending, processing, on delivery, delivered, cancelled
+        $orders = Order::with('user', 'orderProducts')->orderBy(DB::raw("FIELD(status, 'pending', 'arrived', 'on delivery', 'processing', 'completed', 'declined')"))->get();
+
+        // get product details
+        foreach ($orders as $order) {
+            foreach ($order->orderProducts as $orderProduct) {
+                $orderProduct->product = Product::find($orderProduct->product_id);
+                // image
+                $orderProduct->product->image = url('images/' . $orderProduct->product->image);
+            }
+        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success',
+            'data' => $orders
+        ], 200);
+    }
+
+    public function accept_order(Request $request, $id) {
+        $order = Order::find($id);
+        if (!$order) return response()->json(['statusCode' => 404, 'message' => 'Order not found'], 404);
+
+        try {
+            $order->update(['status' => 'processing']);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Order accepted successfully',
+                'data' => $order
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['statusCode' => 500, 'message' => 'Internal server error'], 500);
+        }
+    }
+
+    public function decline_order(Request $request, $id) {
+        $order = Order::find($id);
+        if (!$order) return response()->json(['statusCode' => 404, 'message' => 'Order not found'], 404);
+
+        try {
+            $order->update(['status' => 'decline']);
+
+            // return to stock
+            foreach ($order->orderProducts as $orderProduct) {
+                $product = Product::find($orderProduct->product_id);
+                $product->update(['stock' => $product->stock + $orderProduct->quantity]);
+            }
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Order declined successfully',
+                'data' => $order
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['statusCode' => 500, 'message' => 'Internal server error'], 500);
+        }
+    }
+
+    public function deliver_order(Request $request, $id) {
+        $order = Order::find($id);
+        if (!$order) return response()->json(['statusCode' => 404, 'message' => 'Order not found'], 404);
+
+        try {
+            $order->update(['status' => 'on delivery']);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Order delivered successfully',
+                'data' => $order
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['statusCode' => 500, 'message' => 'Internal server error'], 500);
+        }
+    }
+
+    // produk telah sampai tujuan
+    public function arrive_order(Request $request, $id) {
+        $order = Order::find($id);
+        if (!$order) return response()->json(['statusCode' => 404, 'message' => 'Order not found'], 404);
+
+        try {
+            $order->update(['status' => 'arrived']);
+
+            return response()->json([
+                'statusCode' => 200,
+                'message' => 'Order completed successfully',
+                'data' => $order
+            ], 200);
+        } catch (\Exception $e) {
+            return response()->json(['statusCode' => 500, 'message' => 'Internal server error'], 500);
         }
     }
 }

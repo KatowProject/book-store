@@ -20,6 +20,12 @@
         <ion-icon slot="icon-only" name="add-outline"></ion-icon>
       </ion-button>
     </ion-buttons>
+
+    <ion-buttons slot="end" *ngIf="folder === 'Users'">
+      <ion-button (click)="addUserModal()">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <!-- add cart icon -->
 </ion-header>
@@ -181,6 +187,12 @@
                     <ion-icon name="eye-outline"></ion-icon>
                     &nbsp;Detail
                   </ion-button>
+
+                  <!-- konfirmasi pesanan -->
+                  <ion-button slot="end" color="success" size="small" *ngIf="item.status === 'arrived'"
+                    (click)="confirmOrder(item)">
+                    <ion-icon name="checkmark-outline"></ion-icon>&nbsp;Selesai
+                  </ion-button>
                 </ion-item>
               </ion-col>
             </ion-row>
@@ -252,10 +264,83 @@
               <ion-label> {{ item.name }} </ion-label>
               <small>{{ item.role }}</small>
               <!-- button edit -->
-              <ion-button slot="end" color="primary" size="small" (click)="editUserModal(item)">
+              <ion-button color="primary" size="small" (click)="editUserModal(item)" style="margin-left: 40px;">
                 <ion-icon name="create-outline"></ion-icon>
               </ion-button>
+
+              <!-- button delete -->
+              <ion-button color="danger" size="small" (click)="deleteUser(item)">
+                <ion-icon name="trash-outline"></ion-icon>
+              </ion-button>
             </ion-item>
+          </ion-list>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="folder === 'OrdersManagement'">
+        <ion-col *ngFor="let item of data" size="12">
+          <ion-list style="border-radius: 5px;">
+            <!-- thumbnail, title and status order -->
+            <ion-row>
+              <ion-col size="12" style="padding-left: 10px; padding-right: 10px;">
+                <ion-item (click)="orderDetail(item)">
+                  <ion-thumbnail slot="start">
+                    <img alt="Silhouette of mountains" src="{{ item.order_products[0].product.image }}"
+                      style="border-radius: 5px;" />
+                  </ion-thumbnail>
+                  <ion-label>
+                    <h1 class="font-bold">{{ item.order_products[0].product.name }}</h1>
+                    <!-- total product secondary color-->
+                    <small color="dark">+{{ item.order_products.length - 1 }} produk lainnya</small>
+                  </ion-label>
+                  <br>
+                  <ion-badge slot="end" color="{{ item.indicator }}">
+                    {{ item.status }}
+                  </ion-badge>
+                </ion-item>
+              </ion-col>
+
+              <ion-col size="12" style="padding-left: 10px;">
+                <ion-item>
+                  <ion-label>
+                    <h5 class="font-bold">Total</h5>
+                    <small color="dark">{{ item.total + ((item.total * 1.5) / 100) | currency: 'Rp': 'symbol' }}</small>
+                  </ion-label>
+
+                  <!-- button order detail -->
+
+                  <!-- accept order -->
+                  <ion-button color="success" size="small" (click)="acceptOrder(item)"
+                    *ngIf="item.status === 'pending'">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                  </ion-button>
+
+                  <!-- decline -->
+                  <ion-button color="danger" size="small" (click)="declineOrder(item)"
+                    *ngIf="item.status === 'pending'">
+                    <ion-icon name="close-outline"></ion-icon>
+                  </ion-button>
+
+                  <!-- shipping -->
+                  <ion-button color="primary" size="small" *ngIf="item.status === 'processing'"
+                    (click)="sendOrder(item)">
+                    <ion-icon name="car-outline"></ion-icon>
+                    &nbsp;Kirim Pesanan
+                  </ion-button>
+
+                  <!-- arrived -->
+                  <ion-button color="success" size="small" *ngIf="item.status === 'on delivery'"
+                    (click)="arrivedOrder(item)">
+                    <ion-icon name="checkmark-outline"></ion-icon>
+                    &nbsp;Pesanan Tiba
+                  </ion-button>
+
+                  <ion-button color="primary" size="small" (click)="orderDetail(item)" style="margin-left: 20px;">
+                    <ion-icon name="eye-outline"></ion-icon>
+                  </ion-button>
+                </ion-item>
+              </ion-col>
+            </ion-row>
           </ion-list>
         </ion-col>
       </ion-row>

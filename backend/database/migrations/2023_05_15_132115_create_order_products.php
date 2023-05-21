@@ -19,6 +19,7 @@ class CreateOrderProducts extends Migration
             $table->bigInteger('product_id')->unsigned();
             $table->foreign('order_id')->references('id')->on('orders')->onDelete('cascade');
             $table->foreign('product_id')->references('id')->on('products');
+            $table->integer('quantity');
             $table->timestamps();
         });
     }

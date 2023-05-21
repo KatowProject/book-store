@@ -1,5 +1,5 @@
 import { Component, Input, OnInit } from '@angular/core';
-import { ModalController, LoadingController, AlertController } from '@ionic/angular';
+import { ModalController, LoadingController, AlertController, ToastController } from '@ionic/angular';
 import { AppComponent } from '../../app.component';
 import { environment } from 'src/environments/environment.prod';
 
@@ -23,7 +23,12 @@ export class PlaceorderModalComponent implements OnInit {
     total: 0,
   }
 
-  constructor(private modalController: ModalController, private loadingController: LoadingController, private alertController: AlertController) {
+  constructor(
+    private modalController: ModalController,
+    private loadingController: LoadingController,
+    private alertController: AlertController,
+    private toastController: ToastController
+  ) {
   }
 
   ngOnInit() {
@@ -68,16 +73,15 @@ export class PlaceorderModalComponent implements OnInit {
       return;
     }
 
-    this.alertController.create({
-      header: 'Success',
-      message: 'Your order has been placed',
-      buttons: ['OK']
-    }).then(alert => {
-      alert.present();
+    this.toastController.create({
+      message: 'Telah berhasil melakukan pemesanan',
+      duration: 2000
+    }).then(toast => {
+      toast.present();
     });
 
     loading.dismiss();
 
-    this.modalController.dismiss(null, 'confirm');
+    this.modalController.dismiss('success', 'confirm');
   }
 }

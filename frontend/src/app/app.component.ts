@@ -14,10 +14,12 @@ export class AppComponent {
     // user pages
     { title: 'Home', url: '/folder/Home', icon: 'home', role: 'user' },
     { title: 'Orders', url: '/folder/Orders', icon: 'cart', role: 'user' },
+    { title: 'Category', url: '/category', icon: 'list', role: 'user' },
 
     // admin pages
     { title: 'Products', url: '/folder/Products', icon: 'cube', role: 'admin' },
     { title: 'Users', url: '/folder/Users', icon: 'people', role: 'admin' },
+    { title: 'Orders Management', url: '/folder/OrdersManagement', icon: 'cart', role: 'admin' },
   ];
 
   constructor(private route: Router, private alertController: AlertController) {

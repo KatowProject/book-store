@@ -28,6 +28,14 @@ const routes: Routes = [
     path: 'cart',
     loadChildren: () => import('./user/cart/cart.module').then(m => m.CartPageModule)
   },
+  {
+    path: 'profile',
+    loadChildren: () => import('./user/profile/profile.module').then( m => m.ProfilePageModule)
+  },
+  {
+    path: 'category',
+    loadChildren: () => import('./user/category/category.module').then( m => m.CategoryPageModule)
+  },
 ];
 
 @NgModule({

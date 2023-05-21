@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Cart;
+use App\Models\Category;
 use App\Models\Order;
 use App\Models\OrderProduct;
 use App\Models\Product;
@@ -15,10 +16,37 @@ class UserController extends Controller
     public function get_all_products(Request $request) {
         // sort by stock
         $products = Product::where('status', 'active')->orderBy('stock', 'desc')->get();
+
+        foreach ($products as $product) {
+            $category = Category::where('id', $product['category_id'])->first();
+            $product['category'] = $category['name'];
+        }
+
         return response()->json([
             'statusCode' => 200,
             'message' => 'Success!',
             'data' => $products
+        ], 200);
+    }
+
+    public function get_all_products_by_category(Request $request) {
+        // filter non active product
+        $category = Category::with('products')->get();
+
+        foreach ($category as $cat) {
+            $cat['name'] = ucfirst($cat['name']);
+            $cat['products'] = $cat->products->where('status', 'active');
+
+            // image url
+            foreach ($cat['products'] as $product) {
+                $product['image'] = url('images/' . $product['image']);
+            }
+        }
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success!',
+            'data' => $category
         ], 200);
     }
 
@@ -36,6 +64,9 @@ class UserController extends Controller
                 $product['sold_count'] += $orderProduct['quantity'];
             }
             $product['image'] = url('images/' . $product['image']);
+
+            $category = Category::where('id', $product['category_id'])->first();
+            $product['category'] = $category['name'];
 
             unset($product['orderProducts']);
         }
@@ -242,7 +273,7 @@ class UserController extends Controller
             'address' => 'required|string',
             'phone_number' => 'required|string',
             'post_code' => 'required|string',
-            'payment_method' => 'required|string|in:cod,transfer',
+            'payment_method' => 'required|string|in:cash,transfer',
         ]);
 
         if ($v->fails()) {
@@ -309,6 +340,27 @@ class UserController extends Controller
             'statusCode' => 200,
             'message' => 'Success!',
             'data' => $orders
+        ], 200);
+    }
+
+    public function complete_order(Request $request, $id) {
+        $user = $request['userauth'];
+        $user_id = $user['id'];
+
+        $order = Order::where('id', $id)->where('user_id', $user_id)->first();
+        if (!$order) {
+            return response()->json([
+                'statusCode' => 404,
+                'message' => 'Order not found!'
+            ], 404);
+        }
+
+        $order->status = 'completed';
+        $order->save();
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Order completed successfully!'
         ], 200);
     }
 }

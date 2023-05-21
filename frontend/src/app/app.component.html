@@ -13,6 +13,15 @@
               <ion-label>{{ p.title }}</ion-label>
             </ion-item>
           </ion-menu-toggle>
+
+          <!-- profile -->
+          <ion-menu-toggle auto-hide="false">
+            <ion-item routerDirection="root" [routerLink]="['/profile']" lines="none" detail="false"
+              routerLinkActive="selected">
+              <ion-icon aria-hidden="true" slot="start" ios="person-outline" md="person-sharp"></ion-icon>
+              <ion-label>Profile</ion-label>
+            </ion-item>
+          </ion-menu-toggle>
         </ion-list>
         <!--
         <ion-list id="labels-list">
@@ -25,7 +34,8 @@
         </ion-list> -->
         <br>
         <!-- logout button -->
-        <ion-menu-toggle auto-hide="false">
+        <!-- on bottom screen and block button -->
+        <ion-menu-toggle auto-hide="false" style="position: absolute; bottom: 0; width: 95%; margin-bottom: 10px;">
           <ion-button (click)="logout()" color="danger" expand="block">
             <ion-icon slot="start" name="log-out-outline"></ion-icon>Logout
           </ion-button>

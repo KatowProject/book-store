@@ -1,10 +1,9 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
+    <ion-title>Profile</ion-title>
     <ion-buttons slot="start">
-      <ion-back-button (click)="cancel()" default-href="#"></ion-back-button>
+      <ion-menu-button></ion-menu-button>
     </ion-buttons>
-
-    <ion-title>Edit User</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -28,14 +27,6 @@
         <ion-input label="Password" labelPlacement="floating" placeholder="Password"
           [(ngModel)]="form.password"></ion-input>
       </ion-item>
-
-      <ion-item>
-        <ion-select label="role" label-placement="floating" placeholder="Select One" [(ngModel)]="form.role">
-          <ion-select-option value="admin">Admin</ion-select-option>
-          <ion-select-option value="user">User</ion-select-option>
-        </ion-select>
-      </ion-item>
-
       <ion-button expand="block" (click)="save()">Save</ion-button>
     </ion-card-content>
   </ion-card>

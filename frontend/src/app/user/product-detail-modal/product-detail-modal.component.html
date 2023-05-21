@@ -17,15 +17,14 @@
     </ion-card-header>
 
     <ion-card-content>
-      Lorem ipsum dolor sit amet, consectetur adipisicing elit. Atque optio earum error id ducimus repellendus qui
-      corrupti? Nam porro exercitationem aliquid blanditiis repudiandae sint sequi neque aut. Veniam, itaque veritatis.
+      {{ item.description }}
     </ion-card-content>
 
     <!-- information book -->
     <ion-list>
       <ion-item>
         <ion-label>Author</ion-label>
-        <ion-note slot="end">Author</ion-note>
+        <ion-note slot="end"> {{ item.author }}</ion-note>
       </ion-item>
 
       <ion-item>
@@ -35,12 +34,13 @@
 
       <ion-item>
         <ion-label>Pages</ion-label>
-        <ion-note slot="end">{{ item.pages }}</ion-note>
+        <ion-note slot="end">{{ item.total_page }}</ion-note>
       </ion-item>
 
+      <!-- kategori -->
       <ion-item>
-        <ion-label>Language</ion-label>
-        <ion-note slot="end">{{ item.language }}</ion-note>
+        <ion-label>Category</ion-label>
+        <ion-note slot="end">{{ item.category }}</ion-note>
       </ion-item>
     </ion-list>
   </ion-card>

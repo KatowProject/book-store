@@ -1,0 +1,75 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+
+    <ion-title>Category</ion-title>
+    <ion-buttons slot="end">
+      <ion-button routerLink="/cart">
+        <ion-icon slot="icon-only" name="cart-outline"></ion-icon>
+        <ion-badge color="danger" *ngIf="cart > 0">{{ cart }}</ion-badge>
+      </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div id="container">
+    <ion-row>
+      <ion-col size="12" *ngFor="let category of data">
+        <ion-card>
+          <ion-card-header>
+            <ion-card-title>{{ category.name }}</ion-card-title>
+          </ion-card-header>
+
+          <ion-card-content>
+            <swiper-container [freeMode]="true" [slidesOffsetBefore]="15" [slidesPerView]="1.5" [spaceBetween]="15">
+              <swiper-slide *ngFor="let item of category.products">
+                <ion-card>
+                  <img alt="{{ item.name }}" src="{{ item.image }}" loading="lazy" class="r-img" />
+                  <ion-card-header>
+                    <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
+                      {{ item.name }}
+                    </h4>
+                  </ion-card-header>
+                  <!-- hr tailwind -->
+                  <hr class="border-b-2 border-gray-400" />
+                  <ion-card-content>
+                    <!-- price idr Rp. currency with box -->
+                    <ion-row>
+                      <ion-col class="ion-text-center" size="12">
+                        <ion-text class="font-bold">
+                          {{ item.price | currency: 'Rp': 'symbol' }}
+                        </ion-text>
+                        <br>
+                        <h6 *ngIf="item.stock === 0" color="danger">Out of stock</h6>
+                        <h6 *ngIf="item.stock > 0" class="ion-text-success">{{ item.stock }} left</h6>
+                      </ion-col>
+                    </ion-row>
+
+                    <ion-row>
+                      <ion-col class="ion-text-center" size="6">
+                        <ion-button color="primary" size="block" [disabled]="item.stock === 0"
+                          (click)="addToCart(item)">
+                          <ion-icon name="cart-outline"></ion-icon>
+                        </ion-button>
+                      </ion-col>
+
+                      <!-- detail -->
+                      <ion-col class="ion-text-center" size="6">
+                        <ion-button color="primary" size="block" (click)="productDetail(item, category)">
+                          <ion-icon name="eye-outline"></ion-icon>
+                        </ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ion-card-content>
+                </ion-card>
+              </swiper-slide>
+            </swiper-container>
+          </ion-card-content>
+        </ion-card>
+      </ion-col>
+    </ion-row>
+  </div>
+</ion-content>

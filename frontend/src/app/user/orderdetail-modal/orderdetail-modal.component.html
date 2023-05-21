@@ -4,7 +4,7 @@
       <ion-back-button (click)="cancel()" default-href="#"></ion-back-button>
     </ion-buttons>
 
-    <ion-title>Place Order</ion-title>
+    <ion-title>Order Details</ion-title>
   </ion-toolbar>
 </ion-header>
 
@@ -85,11 +85,19 @@
         </ion-label>
       </ion-item>
 
+      <!-- tax 1.5 -->
+      <ion-item>
+        <ion-label>
+          <h5>Tax (1.5%) :</h5>
+          <p>{{ item.total * 0.015 | currency: 'Rp': 'symbol' }}</p>
+        </ion-label>
+      </ion-item>
+
       <!-- total price -->
       <ion-item>
         <ion-label>
           <h5>Total Price :</h5>
-          <p>{{ item.total | currency: 'Rp': 'symbol' }}</p>
+          <p>{{ item.total + (item.total * 0.015) | currency: 'Rp': 'symbol' }}</p>
         </ion-label>
       </ion-item>
 

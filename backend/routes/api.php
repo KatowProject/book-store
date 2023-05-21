@@ -32,6 +32,7 @@ Route::middleware('api.user')->group(function() {
     Route::prefix('/products')->group(function() {
         Route::get('/', 'App\Http\Controllers\UserController@get_all_products');
         Route::get('/discovery', 'App\Http\Controllers\UserController@get_products_discovery');
+        Route::get('/categories', 'App\Http\Controllers\UserController@get_all_products_by_category');
         Route::get('/{id}', 'App\Http\Controllers\UserController@get_product');
     });
 
@@ -50,6 +51,8 @@ Route::middleware('api.user')->group(function() {
         Route::get('/', 'App\Http\Controllers\UserController@get_all_orders');
         Route::get('/{id}', 'App\Http\Controllers\UserController@get_order');
     });
+
+    Route::put('/complete-order/{id}', 'App\Http\Controllers\UserController@complete_order');
 });
 
 Route::middleware('api.admin')->group(function() {
@@ -84,5 +87,16 @@ Route::middleware('api.admin')->group(function() {
             Route::put('/{id}', 'App\Http\Controllers\AdminController@update_category');
             Route::delete('/{id}', 'App\Http\Controllers\AdminController@delete_category');
         });
+
+        Route::prefix('/orders')->group(function() {
+            Route::get('/', 'App\Http\Controllers\AdminController@get_all_orders');
+            Route::get('/{id}', 'App\Http\Controllers\AdminController@get_order');
+            Route::put('/{id}', 'App\Http\Controllers\AdminController@update_order');
+        });
+
+        Route::put('/accept-order/{id}', 'App\Http\Controllers\AdminController@accept_order');
+        Route::put('/decline-order/{id}', 'App\Http\Controllers\AdminController@decline_order');
+        Route::put('/deliver-order/{id}', 'App\Http\Controllers\AdminController@deliver_order');
+        Route::put('/arrive-order/{id}', 'App\Http\Controllers\AdminController@arrive_order');
     });
 });

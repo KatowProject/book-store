@@ -1,7 +1,7 @@
 import { environment } from './../../environments/environment.prod';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
-import { AlertController, LoadingController, ModalController } from '@ionic/angular';
+import { AlertController, LoadingController, ModalController, ToastController } from '@ionic/angular';
 import { register } from 'swiper/element/bundle';
 
 import { OrderdetailModalComponent } from '../user/orderdetail-modal/orderdetail-modal.component';
@@ -9,6 +9,7 @@ import { ProductDetailModalComponent } from '../user/product-detail-modal/produc
 import { EditProductModalComponent } from '../admin/edit-product-modal/edit-product-modal.component';
 import { AddProductModalComponent } from '../admin/add-product-modal/add-product-modal.component';
 import { EditUserModalComponent } from '../admin/edit-user-modal/edit-user-modal.component';
+import { AddUserModalComponent } from '../admin/add-user-modal/add-user-modal.component';
 
 register();
 @Component({
@@ -31,7 +32,8 @@ export class FolderPage implements OnInit {
     private router: Router,
     private alertController: AlertController,
     private loadingController: LoadingController,
-    private modalController: ModalController
+    private modalController: ModalController,
+    private toastController: ToastController
   ) { }
 
   async ngOnInit() {
@@ -67,6 +69,10 @@ export class FolderPage implements OnInit {
 
       case 'users':
         this.getAllUsers();
+        break;
+
+      case 'ordersmanagement':
+        this.getAllOrders();
         break;
       default:
         this.onLoad.dismiss();
@@ -136,12 +142,11 @@ export class FolderPage implements OnInit {
 
         const data = await res.json();
         if (data.statusCode === 200) {
-          this.alertController.create({
-            header: 'Success',
-            message: 'Success add to cart',
-            buttons: ['OK']
-          }).then(alert => {
-            alert.present();
+          this.toastController.create({
+            message: 'Berhasil menambahkan ke keranjang',
+            duration: 2000,
+          }).then(toast => {
+            toast.present();
           });
 
           this.getCartLength();
@@ -186,12 +191,16 @@ export class FolderPage implements OnInit {
               item.indicator = 'success';
               break;
 
-            case 'decline':
+            case 'declined':
               item.indicator = 'danger';
               break;
 
             case 'on delivery':
               item.indicator = 'tertiary';
+              break;
+
+            case 'arrived':
+              item.indicator = 'success';
               break;
 
             default:
@@ -214,6 +223,63 @@ export class FolderPage implements OnInit {
         alert.present();
       });
     }
+  }
+
+  confirmOrder(item: any) {
+    this.alertController.create({
+      header: 'Konfirmasi',
+      message: 'Apakah anda yakin ingin mengkonfirmasi pesanan ini?',
+      buttons: [
+        {
+          text: 'Batal',
+          role: 'cancel'
+        },
+        {
+          text: 'Ya',
+          handler: async () => {
+            this.loadingController.create({
+              message: 'Loading...',
+              spinner: 'crescent'
+            }).then(loading => {
+              loading.present();
+            });
+
+            try {
+              const res = await fetch(environment.BASE_URL + 'api/complete-order/' + item.id, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+              });
+
+              const json = await res.json();
+              if (json.statusCode === 200) {
+                this.toastController.create({
+                  'message': 'Berhasil mengkonfirmasi pesanan!',
+                  'duration': 2000
+                }).then(toast => {
+                  toast.present();
+                  this.loadingController.dismiss();
+                });
+              }
+            } catch (err: any) {
+              this.alertController.create({
+                header: 'Error',
+                message: err.message,
+                buttons: ['OK']
+              }).then(alert => {
+                alert.present();
+                this.loadingController.dismiss();
+              });
+            }
+
+            this.getOrders();
+          }
+        }
+      ]
+    }).then(alert => {
+      alert.present();
+    });
   }
 
   async orderDetail(item: any) {
@@ -272,10 +338,6 @@ export class FolderPage implements OnInit {
     const json = await res.json();
     this.data = json.data;
 
-    for (const item of this.data) {
-      item.image = environment.BASE_URL + 'images/' + item.image;
-    }
-
     this.onLoad.dismiss();
   }
 
@@ -297,7 +359,7 @@ export class FolderPage implements OnInit {
   async deleteProduct(item: any) {
     const alert = await this.alertController.create({
       header: 'Delete Product',
-      message: 'Are you sure want to delete this product?',
+      message: 'Apakah kamu yakin ingin menghapus produk ini?',
       buttons: [
         {
           text: 'Cancel',
@@ -318,7 +380,7 @@ export class FolderPage implements OnInit {
               if (json.statusCode === 200) {
                 this.alertController.create({
                   header: 'Success',
-                  message: 'Success delete product',
+                  message: 'Sukses menghapus produk!',
                   buttons: ['OK']
                 }).then(alert => {
                   alert.present();
@@ -384,5 +446,348 @@ export class FolderPage implements OnInit {
     });
 
     return await modal.present();
+  }
+
+  async addUserModal() {
+    const modal = await this.modalController.create({
+      component: AddUserModalComponent
+    });
+
+    modal.onDidDismiss().then(() => {
+      this.getAllUsers();
+    });
+
+    return await modal.present();
+  }
+
+  async deleteUser(item: any) {
+    const alert = await this.alertController.create({
+      header: 'Delete User',
+      message: 'Apakah kamu yakin ingin menghapus user ini?',
+      buttons: [
+        {
+          'text': 'Cancel',
+          'role': 'cancel'
+        },
+        {
+          'text': 'Delete',
+          handler: async () => {
+            this.loadingController.create({
+              message: 'Please wait...'
+            }).then(onLoad => {
+              onLoad.present();
+            });
+
+            try {
+              const res = await fetch(environment.BASE_URL + 'api/admin/users/' + item.id, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+              });
+
+              const json = await res.json();
+              if (json.statusCode === 200) {
+                this.alertController.create({
+                  header: 'Success',
+                  message: 'Sukses menghapus user!',
+                  buttons: ['OK']
+                }).then(alert => {
+                  this.loadingController.dismiss();
+                  alert.present();
+                });
+
+                this.getAllUsers();
+              }
+            } catch (err: any) {
+              this.alertController.create({
+                header: 'Error',
+                message: err.message,
+                buttons: ['OK']
+              }).then(alert => {
+                alert.present();
+                this.loadingController.dismiss();
+              });
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async getAllOrders() {
+    const res = await fetch(environment.BASE_URL + 'api/admin/orders', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+
+    const json = await res.json();
+    this.data = json.data;
+
+    for (const item of this.data) {
+      item.indicator = 'warning';
+      console.log(item.status);
+      switch (item.status) {
+        case 'pending':
+          item.indicator = 'warning';
+          break;
+
+        case 'processing':
+          item.indicator = 'primary';
+          break;
+
+        case 'completed':
+          item.indicator = 'success';
+          break;
+
+        case 'declined':
+          item.indicator = 'danger';
+          break;
+
+        case 'on delivery':
+          item.indicator = 'tertiary';
+          break;
+
+        case 'arrived':
+          item.indicator = 'secondary';
+          break;
+
+        default:
+          item.indicator = 'warning';
+          break;
+      }
+    }
+
+    this.onLoad.dismiss();
+  }
+
+  async acceptOrder(item: any) {
+    this.alertController.create({
+      header: 'Accept Order',
+      message: 'Apakah kamu yakin ingin menerima pesanan ini?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Accept',
+          handler: async () => {
+            try {
+              this.loadingController.create({
+                message: 'Please wait...'
+              }).then(onLoad => {
+                onLoad.present();
+              });
+
+              const res = await fetch(environment.BASE_URL + 'api/admin/accept-order/' + item.id, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+              });
+
+              const json = await res.json();
+              if (json.statusCode === 200) {
+                this.alertController.create({
+                  header: 'Success',
+                  message: 'Sukses menerima pesanan!',
+                  buttons: ['OK']
+                }).then(alert => {
+                  alert.present();
+                  this.loadingController.dismiss();
+                });
+
+                this.getAllOrders();
+              }
+
+            } catch (err: any) {
+              this.alertController.create({
+                header: 'Error',
+                message: err.message,
+                buttons: ['OK']
+              }).then(alert => {
+                alert.present();
+              });
+            }
+          }
+        }
+      ]
+    }).then(alert => {
+      alert.present();
+    });
+  }
+
+  async declineOrder(item: any) {
+    this.alertController.create({
+      header: 'Tolak Pesanan',
+      message: 'Apakah kamu yakin ingin menolak pesanan ini?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Tolak',
+          handler: async () => {
+            this.loadingController.create({
+              message: 'Please wait...'
+            }).then(onLoad => {
+              onLoad.present();
+            });
+
+            try {
+              const res = await fetch(environment.BASE_URL + 'api/admin/environment.BASE_URL-order/' + item.id, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+              });
+
+              const json = await res.json();
+              if (json.statusCode === 200) {
+                this.alertController.create({
+                  header: 'Success',
+                  message: 'Sukses menolak pesanan!',
+                  buttons: ['OK']
+                }).then(alert => {
+                  alert.present();
+                  this.loadingController.dismiss();
+                });
+              }
+
+              this.getAllOrders();
+            } catch (err: any) {
+              this.alertController.create({
+                header: 'Error',
+                message: err.message,
+                buttons: ['OK']
+              }).then(alert => {
+                alert.present();
+                this.loadingController.dismiss();
+              });
+            }
+          }
+        }
+      ]
+    }).then(alert => {
+      alert.present();
+    });
+  }
+
+  sendOrder(item: any) {
+    this.alertController.create({
+      header: 'Kirim Pesanan',
+      message: 'Apakah kamu yakin ingin mengirim pesanan ini?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Kirim',
+          handler: async () => {
+            this.loadingController.create({
+              message: 'Please wait...'
+            }).then(onLoad => {
+              onLoad.present();
+            });
+
+            try {
+              const res = await fetch(environment.BASE_URL + 'api/admin/deliver-order/' + item.id, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+              });
+
+              const json = await res.json();
+              if (json.statusCode === 200) {
+                this.alertController.create({
+                  header: 'Success',
+                  message: 'Sukses mengirim pesanan!',
+                  buttons: ['OK']
+                }).then(alert => {
+                  alert.present();
+                });
+              }
+
+              this.getAllOrders();
+              this.loadingController.dismiss();
+            } catch (err: any) {
+              this.alertController.create({
+                header: 'Error',
+                message: err.message,
+                buttons: ['OK']
+              }).then(alert => {
+                alert.present();
+                this.loadingController.dismiss();
+              });
+            }
+          }
+        }
+      ]
+    }).then(alert => {
+      alert.present();
+    });
+  }
+
+  arrivedOrder(item: any) {
+    this.alertController.create({
+      header: 'Pesanan Tiba',
+      message: 'Apakah kamu yakin ingin menandai pesanan ini telah tiba?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Tiba',
+          handler: async () => {
+            this.loadingController.create({
+              message: 'Please wait...'
+            }).then(onLoad => {
+              onLoad.present();
+            });
+
+            try {
+              const res = await fetch(environment.BASE_URL + 'api/admin/arrive-order/' + item.id, {
+                method: 'PUT',
+                headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+              });
+
+              const json = await res.json();
+              if (json.statusCode === 200) {
+                this.alertController.create({
+                  header: 'Success',
+                  message: 'Pesanan telah tiba!',
+                  buttons: ['OK']
+                }).then(alert => {
+                  alert.present();
+                });
+              }
+
+              this.getAllOrders();
+              this.loadingController.dismiss();
+            } catch (err: any) {
+              this.alertController.create({
+                header: 'Error',
+                message: err.message,
+                buttons: ['OK']
+              }).then(alert => {
+                alert.present();
+                this.loadingController.dismiss();
+              });
+            }
+          }
+        }
+      ]
+    }).then(alert => {
+      alert.present();
+    });
   }
 }

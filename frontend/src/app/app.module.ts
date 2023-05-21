@@ -13,6 +13,9 @@ import { ProductDetailModalComponent } from './user/product-detail-modal/product
 import { RegisterModalComponent } from './register-modal/register-modal.component';
 import { EditProductModalComponent } from './admin/edit-product-modal/edit-product-modal.component';
 import { AddProductModalComponent } from './admin/add-product-modal/add-product-modal.component';
+import { EditUserModalComponent } from './admin/edit-user-modal/edit-user-modal.component';
+import { AddUserModalComponent } from './admin/add-user-modal/add-user-modal.component';
+import { FolderPage } from './folder/folder.page';
 
 @NgModule({
   declarations: [
@@ -22,11 +25,13 @@ import { AddProductModalComponent } from './admin/add-product-modal/add-product-
     ProductDetailModalComponent,
     RegisterModalComponent,
     EditProductModalComponent,
-    AddProductModalComponent
+    AddProductModalComponent,
+    EditUserModalComponent,
+    AddUserModalComponent
   ],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, FormsModule, HttpClientModule],
-  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
-  bootstrap: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent, RegisterModalComponent],
+  providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }, FolderPage],
+  bootstrap: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent, RegisterModalComponent, FolderPage],
   schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }
