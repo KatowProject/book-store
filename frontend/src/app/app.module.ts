@@ -1,4 +1,4 @@
-import { NgModule } from '@angular/core';
+import { NgModule, CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 import { BrowserModule } from '@angular/platform-browser';
 import { RouteReuseStrategy } from '@angular/router';
 import { HttpClientModule } from '@angular/common/http';
@@ -12,11 +12,21 @@ import { OrderdetailModalComponent } from './user/orderdetail-modal/orderdetail-
 import { ProductDetailModalComponent } from './user/product-detail-modal/product-detail-modal.component';
 import { RegisterModalComponent } from './register-modal/register-modal.component';
 import { EditProductModalComponent } from './admin/edit-product-modal/edit-product-modal.component';
+import { AddProductModalComponent } from './admin/add-product-modal/add-product-modal.component';
 
 @NgModule({
-  declarations: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent, RegisterModalComponent, EditProductModalComponent],
+  declarations: [
+    AppComponent,
+    PlaceorderModalComponent,
+    OrderdetailModalComponent,
+    ProductDetailModalComponent,
+    RegisterModalComponent,
+    EditProductModalComponent,
+    AddProductModalComponent
+  ],
   imports: [BrowserModule, IonicModule.forRoot(), AppRoutingModule, FormsModule, HttpClientModule],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent, PlaceorderModalComponent, OrderdetailModalComponent, ProductDetailModalComponent, RegisterModalComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA]
 })
 export class AppModule { }

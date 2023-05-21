@@ -3,6 +3,7 @@ import { Component, OnInit } from '@angular/core';
 import { AppComponent } from '../app.component';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
 import { RegisterModalComponent } from '../register-modal/register-modal.component';
+import { environment } from 'src/environments/environment.prod';
 @Component({
   selector: 'app-login',
   templateUrl: './login.page.html',
@@ -29,7 +30,7 @@ export class LoginPage implements OnInit {
     if (!this.token) return;
     return new Promise(async (resolve, reject) => {
       console.log('check token');
-      const res = await fetch(AppComponent.BASE_URL + 'api/users/me', {
+      const res = await fetch(environment.BASE_URL + 'api/users/me', {
         headers: {
           'Authorization': 'Bearer ' + this.token
         }
@@ -39,7 +40,7 @@ export class LoginPage implements OnInit {
       if (data.statusCode === 200) {
         // check role
         if (data.data.role === 'admin')
-          window.location.href = '/admin';
+          window.location.href = '/folder/Products';
         else
           window.location.href = '/folder/Home';
 
@@ -66,7 +67,7 @@ export class LoginPage implements OnInit {
 
       loading.present();
 
-      const res = await fetch(AppComponent.BASE_URL + 'api/login', {
+      const res = await fetch(environment.BASE_URL + 'api/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -177,7 +178,7 @@ export class LoginPage implements OnInit {
 
       loading.present();
 
-      const res = await fetch(AppComponent.BASE_URL + 'api/register', {
+      const res = await fetch(environment.BASE_URL + 'api/register', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'

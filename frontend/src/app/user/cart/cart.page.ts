@@ -2,6 +2,7 @@ import { AlertController, LoadingController, ModalController } from '@ionic/angu
 import { Component, OnInit } from '@angular/core';
 import { AppComponent } from '../../app.component';
 import { PlaceorderModalComponent } from '../placeorder-modal/placeorder-modal.component';
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-cart',
@@ -31,7 +32,7 @@ export class CartPage implements OnInit {
       await loading.present();
 
 
-      const res = await fetch(AppComponent.BASE_URL + 'api/get-cart', {
+      const res = await fetch(environment.BASE_URL + 'api/get-cart', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
@@ -50,7 +51,7 @@ export class CartPage implements OnInit {
       if (this.data.length > 0) this.placeOrderDisabled = false;
       for (const item of this.data) {
         item.total = item.product.price * item.quantity;
-        item.product.image = AppComponent.BASE_URL + 'images/' + item.product.image;
+        item.product.image = environment.BASE_URL + 'images/' + item.product.image;
 
         // if name of product is more than 6 character, then add ... at the end of the name
         if (item.product.name.length > 25) {
@@ -68,7 +69,7 @@ export class CartPage implements OnInit {
 
   async decreaseQuantity(item: any) {
     try {
-      const res = await fetch(AppComponent.BASE_URL + 'api/add-to-cart', {
+      const res = await fetch(environment.BASE_URL + 'api/add-to-cart', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('token'),
@@ -93,7 +94,7 @@ export class CartPage implements OnInit {
 
   async increaseQuantity(item: any) {
     try {
-      const res = await fetch(AppComponent.BASE_URL + 'api/add-to-cart', {
+      const res = await fetch(environment.BASE_URL + 'api/add-to-cart', {
         method: 'POST',
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('token'),
@@ -131,7 +132,7 @@ export class CartPage implements OnInit {
   }
 
   async removeFromCart(item: any) {
-    const res = await fetch(AppComponent.BASE_URL + `api/remove-from-cart/${item.id}`, {
+    const res = await fetch(environment.BASE_URL + `api/remove-from-cart/${item.id}`, {
       method: 'DELETE',
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('token')

@@ -12,6 +12,18 @@ class AdminController extends Controller
 {
     public function get_all_products(Request $request) {
         $products = Product::with('category')->get();
+        $products->load('orderProducts');
+
+        // get sold count
+        foreach ($products as $product) {
+            $product['sold_count'] = 0;
+
+            foreach ($product->orderProducts as $orderProduct) {
+                $product['sold_count'] += $orderProduct['quantity'];
+            }
+
+            unset($product['orderProducts']);
+        }
 
         return response()->json([
             'statusCode' => 200,
@@ -42,10 +54,13 @@ class AdminController extends Controller
 
         $v = Validator::make($data, [
             'name' => 'required|string',
-            'price' => 'required|numeric',
-            'stock' => 'required|numeric',
+            'price' => 'required|integer',
+            'stock' => 'required|integer',
             'image' => 'required|mimes:jpg,jpeg,png',
             'description' => 'required|string',
+            'publisher' => 'required|string',
+            'author' => 'required|string',
+            'total_page' => 'required|integer',
             'status' => 'required|in:active,inactive',
             'category_id' => 'required|exists:categories,id'
         ]);
@@ -69,7 +84,10 @@ class AdminController extends Controller
                 'image' => $image_name,
                 'description' => $data['description'],
                 'status' => $data['status'],
-                'category_id' => $data['category_id']
+                'category_id' => $data['category_id'],
+                'publisher' => $data['publisher'],
+                'author' => $data['author'],
+                'total_page' => $data['total_page']
             ]);
 
             return response()->json([
@@ -90,8 +108,8 @@ class AdminController extends Controller
 
         $v = Validator::make($data, [
             'name' => 'string',
-            'price' => 'numeric',
-            'stock' => 'numeric',
+            'price' => 'integer',
+            'stock' => 'integer',
             'image' => 'mimes:jpg,jpeg,png',
             'description' => 'string',
             'status' => 'in:active,inactive',
@@ -136,6 +154,7 @@ class AdminController extends Controller
                 'data' => $product
             ], 200);
         } catch (\Exception $e) {
+            var_dump($e->getMessage());
             return response()->json([
                 'statusCode' => 500,
                 'message' => 'Internal server error'
@@ -305,7 +324,12 @@ class AdminController extends Controller
     }
 
     public function get_all_categories(Request $request) {
+        // capitalize name
         $categories = Category::all();
+
+        foreach ($categories as $category) {
+            $category->name = ucwords($category->name);
+        }
 
         return response()->json([
             'statusCode' => 200,

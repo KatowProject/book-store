@@ -2,6 +2,7 @@ import { Router } from '@angular/router';
 import { AlertController, ModalController, LoadingController } from '@ionic/angular';
 import { Component, OnInit } from '@angular/core';
 import { AppComponent } from '../app.component';
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-register-modal',
@@ -28,7 +29,7 @@ export class RegisterModalComponent implements OnInit {
     await loading.present();
 
 
-    const res = await fetch(AppComponent.BASE_URL + 'api/register', {
+    const res = await fetch(environment.BASE_URL + 'api/register', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json'

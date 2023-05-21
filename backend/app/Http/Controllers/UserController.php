@@ -22,6 +22,38 @@ class UserController extends Controller
         ], 200);
     }
 
+    public function get_products_discovery(Request $request) {
+        // get top 5 product from order_product with the most quantity and get count of order_product
+
+        $products = Product::where('status', 'active')->orderBy('stock', 'desc')->get();
+        $products->load('orderProducts');
+
+        // get count of quantity
+        foreach ($products as $product) {
+            $product['sold_count'] = 0;
+
+            foreach ($product->orderProducts as $orderProduct) {
+                $product['sold_count'] += $orderProduct['quantity'];
+            }
+            $product['image'] = url('images/' . $product['image']);
+
+            unset($product['orderProducts']);
+        }
+
+        $discovery = $products->take(5);
+        $discovery = $products->values()->all();
+        $discovery = collect($products)->sortByDesc('sold_count')->values()->all();
+
+        return response()->json([
+            'statusCode' => 200,
+            'message' => 'Success!',
+            'data' => [
+                'products' => $products,
+                'top_seller' => $discovery
+            ]
+        ], 200);
+    }
+
     public function get_product(Request $request, $id) {
         $product = Product::where('id', $id)->where('status', 'active')->first();
 

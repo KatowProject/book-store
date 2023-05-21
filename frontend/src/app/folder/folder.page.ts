@@ -1,11 +1,16 @@
+import { environment } from './../../environments/environment.prod';
 import { Component, inject, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { AlertController, LoadingController, ModalController } from '@ionic/angular';
-import { AppComponent } from '../app.component';
+import { register } from 'swiper/element/bundle';
+
 import { OrderdetailModalComponent } from '../user/orderdetail-modal/orderdetail-modal.component';
 import { ProductDetailModalComponent } from '../user/product-detail-modal/product-detail-modal.component';
 import { EditProductModalComponent } from '../admin/edit-product-modal/edit-product-modal.component';
+import { AddProductModalComponent } from '../admin/add-product-modal/add-product-modal.component';
+import { EditUserModalComponent } from '../admin/edit-user-modal/edit-user-modal.component';
 
+register();
 @Component({
   selector: 'app-folder',
   templateUrl: './folder.page.html',
@@ -58,7 +63,11 @@ export class FolderPage implements OnInit {
 
       case 'products':
         this.getAllProductsAdmin();
-        break
+        break;
+
+      case 'users':
+        this.getAllUsers();
+        break;
       default:
         this.onLoad.dismiss();
     }
@@ -76,7 +85,7 @@ export class FolderPage implements OnInit {
   }
 
   async getCartLength() {
-    const res_cart = await fetch(AppComponent.BASE_URL + 'api/get-cart', {
+    const res_cart = await fetch(environment.BASE_URL + 'api/get-cart', {
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('token')
       }
@@ -88,19 +97,15 @@ export class FolderPage implements OnInit {
 
   async getAllProducts() {
     try {
-      const res = await fetch(AppComponent.BASE_URL + 'api/products', {
+      const res = await fetch(environment.BASE_URL + 'api/products/discovery', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
       });
 
-      const datas = await res.json();
+      const json = await res.json();
+      this.data = json.data;
 
-      for (const data of datas.data) {
-        data.image = AppComponent.BASE_URL + 'images/' + data.image;
-      }
-
-      this.data = datas.data;
       this.onLoad.dismiss();
     } catch (error: any) {
       this.onLoad.dismiss();
@@ -117,7 +122,7 @@ export class FolderPage implements OnInit {
   async addToCart(item: any) {
     return new Promise(async (resolve, reject) => {
       try {
-        const res = await fetch(AppComponent.BASE_URL + 'api/add-to-cart', {
+        const res = await fetch(environment.BASE_URL + 'api/add-to-cart', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -138,6 +143,8 @@ export class FolderPage implements OnInit {
           }).then(alert => {
             alert.present();
           });
+
+          this.getCartLength();
         }
       } catch (err: any) {
         this.alertController.create({
@@ -153,7 +160,7 @@ export class FolderPage implements OnInit {
 
   async getOrders() {
     try {
-      const res = await fetch(AppComponent.BASE_URL + 'api/orders', {
+      const res = await fetch(environment.BASE_URL + 'api/orders', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
@@ -193,7 +200,7 @@ export class FolderPage implements OnInit {
           }
 
           for (const p of item.order_products) {
-            p.product.image = AppComponent.BASE_URL + 'images/' + p.product.image;
+            p.product.image = environment.BASE_URL + 'images/' + p.product.image;
           }
         }
       }
@@ -234,7 +241,7 @@ export class FolderPage implements OnInit {
   async getMe() {
     if (!localStorage.getItem('token')) return this.onLoad.dismiss();
     try {
-      const res = await fetch(AppComponent.BASE_URL + 'api/users/me', {
+      const res = await fetch(environment.BASE_URL + 'api/users/me', {
         headers: {
           'Authorization': 'Bearer ' + localStorage.getItem('token')
         }
@@ -256,7 +263,7 @@ export class FolderPage implements OnInit {
   }
 
   async getAllProductsAdmin() {
-    const res = await fetch(AppComponent.BASE_URL + 'api/admin/products', {
+    const res = await fetch(environment.BASE_URL + 'api/admin/products', {
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('token')
       }
@@ -266,7 +273,7 @@ export class FolderPage implements OnInit {
     this.data = json.data;
 
     for (const item of this.data) {
-      item.image = AppComponent.BASE_URL + 'images/' + item.image;
+      item.image = environment.BASE_URL + 'images/' + item.image;
     }
 
     this.onLoad.dismiss();
@@ -280,10 +287,102 @@ export class FolderPage implements OnInit {
       }
     });
 
+    modal.onDidDismiss().then(() => {
+      this.getAllProductsAdmin();
+    });
+
+    return await modal.present();
+  }
+
+  async deleteProduct(item: any) {
+    const alert = await this.alertController.create({
+      header: 'Delete Product',
+      message: 'Are you sure want to delete this product?',
+      buttons: [
+        {
+          text: 'Cancel',
+          role: 'cancel'
+        },
+        {
+          text: 'Delete',
+          handler: async () => {
+            try {
+              const res = await fetch(environment.BASE_URL + 'api/admin/products/' + item.id, {
+                method: 'DELETE',
+                headers: {
+                  'Authorization': 'Bearer ' + localStorage.getItem('token')
+                }
+              });
+
+              const json = await res.json();
+              if (json.statusCode === 200) {
+                this.alertController.create({
+                  header: 'Success',
+                  message: 'Success delete product',
+                  buttons: ['OK']
+                }).then(alert => {
+                  alert.present();
+                });
+
+                this.getAllProductsAdmin();
+              }
+            } catch (err: any) {
+              this.alertController.create({
+                header: 'Error',
+                message: err.message,
+                buttons: ['OK']
+              }).then(alert => {
+                alert.present();
+              });
+            }
+          }
+        }
+      ]
+    });
+    await alert.present();
+  }
+
+  async addProductModal() {
+    const modal = await this.modalController.create({
+      component: AddProductModalComponent
+    });
+
+    modal.onDidDismiss().then(() => {
+      this.getAllProductsAdmin();
+    });
+
     return await modal.present();
   }
 
   ngOnDestroy() {
     this.onLoad.dismiss();
+  }
+
+  async getAllUsers() {
+    const res = await fetch(environment.BASE_URL + 'api/admin/users', {
+      headers: {
+        'Authorization': 'Bearer ' + localStorage.getItem('token')
+      }
+    });
+
+    const json = await res.json();
+    this.data = json.data;
+
+    this.onLoad.dismiss();
+  }
+
+  async editUserModal(item: any) {
+    const modal = await this.modalController.create({
+      component: EditUserModalComponent,
+      componentProps: {
+        'item': item
+      }
+    });
+
+    modal.onDidDismiss().then(() => {
+      this.getAllUsers();
+    });
+
+    return await modal.present();
   }
 }

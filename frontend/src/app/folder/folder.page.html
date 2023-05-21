@@ -13,6 +13,13 @@
         <ion-badge color="danger" *ngIf="cart > 0">{{ cart }}</ion-badge>
       </ion-button>
     </ion-buttons>
+
+    <!-- if folder products add button + -->
+    <ion-buttons slot="end" *ngIf="folder === 'Products'">
+      <ion-button (click)="addProductModal()">
+        <ion-icon slot="icon-only" name="add-outline"></ion-icon>
+      </ion-button>
+    </ion-buttons>
   </ion-toolbar>
   <!-- add cart icon -->
 </ion-header>
@@ -21,52 +28,120 @@
   <div id="container">
     <ion-grid>
       <ion-row *ngIf="folder === 'Home'">
-        <ion-col *ngFor="let item of data" size="6">
+        <ion-col size="12">
           <ion-card>
-            <img alt="{{ item.name }}" src="{{ item.image }}" />
             <ion-card-header>
-              <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
-                {{ item.name }}
-              </h4>
+              <ion-card-title>Top Seller</ion-card-title>
             </ion-card-header>
-            <!-- hr tailwind -->
-            <hr class="border-b-2 border-gray-400" />
-            <ion-card-content>
-              <!-- price idr Rp. currency with box -->
-              <ion-row>
-                <ion-col class="ion-text-center">
-                  <ion-text color="primary" class="font-bold">
-                    {{ item.price | currency: 'Rp': 'symbol' }}
-                  </ion-text>
-                </ion-col>
-              </ion-row>
 
-              <!-- stock -->
-              <ion-row>
-                <ion-col class="ion-text-center">
-                  <ion-text color="danger" class="font-bold">
-                    Stock: {{ item.stock }}
-                  </ion-text>
+            <ion-card-content>
+              <swiper-container [freeMode]="true" [slidesOffsetBefore]="15" [slidesPerView]="1.5" [spaceBetween]="15">
+                <swiper-slide *ngFor="let item of data?.top_seller">
+                  <ion-card>
+                    <img alt="{{ item.name }}" src="{{ item.image }}" loading="lazy" class="r-img" />
+                    <ion-card-header>
+                      <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
+                        {{ item.name }}
+                      </h4>
+                    </ion-card-header>
+                    <!-- hr tailwind -->
+                    <hr class="border-b-2 border-gray-400" />
+                    <ion-card-content>
+                      <!-- price idr Rp. currency with box -->
+                      <ion-row>
+                        <ion-col class="ion-text-center" size="12">
+                          <ion-text class="font-bold">
+                            {{ item.price | currency: 'Rp': 'symbol' }}
+                          </ion-text>
+                          <br>
+                          <h6 *ngIf="item.stock === 0" color="danger">Out of stock</h6>
+                          <h6 *ngIf="item.stock > 0" class="ion-text-success">{{ item.stock }} left</h6>
+                        </ion-col>
+                      </ion-row>
+
+                      <ion-row>
+                        <ion-col class="ion-text-center" size="6">
+                          <ion-button color="primary" size="block" (click)="addToCart(item)"
+                            [disabled]="item.stock === 0">
+                            <ion-icon name="cart-outline"></ion-icon>
+                          </ion-button>
+                        </ion-col>
+
+                        <!-- detail -->
+                        <ion-col class="ion-text-center" size="6">
+                          <ion-button color="primary" size="block" (click)="productDetail(item)">
+                            <ion-icon name="eye-outline"></ion-icon>
+                          </ion-button>
+                        </ion-col>
+                      </ion-row>
+                    </ion-card-content>
+                  </ion-card>
+                </swiper-slide>
+              </swiper-container>
+            </ion-card-content>
+
+          </ion-card>
+        </ion-col>
+
+        <ion-col size="12">
+          <ion-card>
+            <ion-card-header>
+              <ion-card-title>All Product</ion-card-title>
+            </ion-card-header>
+
+            <ion-card-content>
+              <ion-row style="padding: 0px;">
+                <ion-col size="6" *ngFor="let item of data?.products">
+                  <ion-card>
+                    <img alt="{{ item.name }}" src="{{ item.image }}" class="r-img" />
+                    <ion-card-header>
+                      <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
+                        {{ item.name }}
+                      </h4>
+                    </ion-card-header>
+                    <!-- hr tailwind -->
+                    <hr class="border-b-2 border-gray-400" />
+                    <ion-card-content>
+                      <!-- price idr Rp. currency with box -->
+                      <ion-row>
+                        <ion-col class="ion-text-center">
+                          <ion-text color="primary" class="font-bold">
+                            {{ item.price | currency: 'Rp': 'symbol' }}
+                          </ion-text>
+                        </ion-col>
+                      </ion-row>
+
+                      <!-- stock -->
+                      <ion-row>
+                        <ion-col class="ion-text-center">
+                          <ion-text color="danger" class="font-bold">
+                            Stock: {{ item.stock }}
+                          </ion-text>
+                        </ion-col>
+                      </ion-row>
+                    </ion-card-content>
+
+                    <ion-row>
+                      <ion-col class="ion-text-center" style="padding-bottom: 0px;">
+                        <ion-button color="primary" size="block" (click)="addToCart(item)"
+                          [disabled]="item.stock === 0">
+                          <ion-icon name="cart-outline"></ion-icon>
+                          &nbsp;Add
+                        </ion-button>
+                      </ion-col>
+
+                      <!-- detail -->
+                      <ion-col class="ion-text-center" style="padding-top: 0px;">
+                        <ion-button color="secondary" size="block" (click)="productDetail(item)">
+                          <ion-icon name="eye-outline"></ion-icon>
+                          &nbsp;Detail
+                        </ion-button>
+                      </ion-col>
+                    </ion-row>
+                  </ion-card>
                 </ion-col>
               </ion-row>
             </ion-card-content>
-
-            <ion-row>
-              <ion-col class="ion-text-center" style="padding-bottom: 0px;">
-                <ion-button color="primary" size="block" (click)="addToCart(item)" [disabled]="item.stock === 0">
-                  <ion-icon name="cart-outline"></ion-icon>
-                  &nbsp;Add
-                </ion-button>
-              </ion-col>
-
-              <!-- detail -->
-              <ion-col class="ion-text-center" style="padding-top: 0px;">
-                <ion-button color="secondary" size="block" (click)="productDetail(item)">
-                  <ion-icon name="eye-outline"></ion-icon>
-                  &nbsp;Detail
-                </ion-button>
-              </ion-col>
-            </ion-row>
           </ion-card>
         </ion-col>
       </ion-row>
@@ -116,7 +191,7 @@
       <ion-row *ngIf="folder === 'Products'">
         <ion-col *ngFor="let item of data" size="6">
           <ion-card>
-            <img alt="{{ item.name }}" src="{{ item.image }}" />
+            <img alt="{{ item.name }}" src="{{ item.image }}" class="r-img" />
             <ion-card-header>
               <h4 class="ion-text-center font-bold ion-text-wrap" color="secondary">
                 {{ item.name }}
@@ -132,13 +207,16 @@
                     {{ item.price | currency: 'Rp': 'symbol' }}
                   </ion-text>
                 </ion-col>
-              </ion-row>
 
-              <!-- stock -->
-              <ion-row>
-                <ion-col class="ion-text-center">
-                  <ion-text color="danger" class="font-bold">
+                <ion-col class="ion-text-center" size="6">
+                  <ion-text class="font-bold">
                     Stock: {{ item.stock }}
+                  </ion-text>
+                </ion-col>
+
+                <ion-col class="ion-text-center" size="6">
+                  <ion-text class="font-bold">
+                    Sold: {{ item.sold_count }}
                   </ion-text>
                 </ion-col>
               </ion-row>
@@ -146,15 +224,39 @@
 
             <ion-row>
               <!-- edit product -->
-              <ion-col class="ion-text-center" style="padding-bottom: 0px;">
+              <ion-col class="ion-text-center" size="6">
                 <ion-button color="primary" size="block" (click)="editProductModal(item)">
                   <ion-icon name="create-outline"></ion-icon>
-                  &nbsp;Edit
+                </ion-button>
+              </ion-col>
+
+              <!-- delete product -->
+              <ion-col class="ion-text-center" size="6">
+                <ion-button color="danger" size="block" (click)="deleteProduct(item)">
+                  <ion-icon name="trash-outline"></ion-icon>
                 </ion-button>
               </ion-col>
             </ion-row>
 
           </ion-card>
+        </ion-col>
+      </ion-row>
+
+      <ion-row *ngIf="folder === 'Users'">
+        <ion-col size="12">
+          <ion-list style="border-radius: 5px; padding-left: 10px;">
+            <ion-item *ngFor="let item of data">
+              <ion-avatar slot="start">
+                <img src="https://loremflickr.com/40/40" />
+              </ion-avatar>
+              <ion-label> {{ item.name }} </ion-label>
+              <small>{{ item.role }}</small>
+              <!-- button edit -->
+              <ion-button slot="end" color="primary" size="small" (click)="editUserModal(item)">
+                <ion-icon name="create-outline"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-list>
         </ion-col>
       </ion-row>
     </ion-grid>

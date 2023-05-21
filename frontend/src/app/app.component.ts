@@ -1,11 +1,13 @@
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { AlertController } from '@ionic/angular';
+import { environment } from 'src/environments/environment.prod';
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
   styleUrls: ['app.component.scss'],
 })
+
 export class AppComponent {
   public me: any;
   public appPages = [
@@ -18,13 +20,11 @@ export class AppComponent {
     { title: 'Users', url: '/folder/Users', icon: 'people', role: 'admin' },
   ];
 
-  static BASE_URL = 'http://localhost:8000/';
-
   constructor(private route: Router, private alertController: AlertController) {
   }
 
   async ngOnInit() {
-    console.log('BASE_URL', AppComponent.BASE_URL);
+    console.log('BASE_URL', environment.BASE_URL);
     const me = await this.getMe();
 
     // filter appPages by role
@@ -61,7 +61,7 @@ export class AppComponent {
 
   async getMe() {
     if (!localStorage.getItem('token')) return;
-    const res = await fetch(AppComponent.BASE_URL + 'api/users/me', {
+    const res = await fetch(environment.BASE_URL + 'api/users/me', {
       headers: {
         'Authorization': 'Bearer ' + localStorage.getItem('token')
       }

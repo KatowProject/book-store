@@ -1,6 +1,7 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { ModalController, LoadingController, AlertController } from '@ionic/angular';
 import { AppComponent } from '../../app.component';
+import { environment } from 'src/environments/environment.prod';
 
 @Component({
   selector: 'app-placeorder-modal',
@@ -43,7 +44,7 @@ export class PlaceorderModalComponent implements OnInit {
 
     await loading.present();
 
-    const res = await fetch(AppComponent.BASE_URL + 'api/place-order', {
+    const res = await fetch(environment.BASE_URL + 'api/place-order', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

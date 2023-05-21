@@ -31,6 +31,7 @@ Route::post('/login', 'App\Http\Controllers\AuthController@login');
 Route::middleware('api.user')->group(function() {
     Route::prefix('/products')->group(function() {
         Route::get('/', 'App\Http\Controllers\UserController@get_all_products');
+        Route::get('/discovery', 'App\Http\Controllers\UserController@get_products_discovery');
         Route::get('/{id}', 'App\Http\Controllers\UserController@get_product');
     });
 
