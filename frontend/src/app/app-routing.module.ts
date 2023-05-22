@@ -30,11 +30,15 @@ const routes: Routes = [
   },
   {
     path: 'profile',
-    loadChildren: () => import('./user/profile/profile.module').then( m => m.ProfilePageModule)
+    loadChildren: () => import('./user/profile/profile.module').then(m => m.ProfilePageModule)
   },
   {
     path: 'category',
-    loadChildren: () => import('./user/category/category.module').then( m => m.CategoryPageModule)
+    loadChildren: () => import('./user/category/category.module').then(m => m.CategoryPageModule)
+  },
+  {
+    path: 'admin/category',
+    loadChildren: () => import('./admin/category/category.module').then(m => m.CategoryPageModule)
   },
 ];
 

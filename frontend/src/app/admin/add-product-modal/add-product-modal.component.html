@@ -65,6 +65,11 @@
       </ion-item>
 
       <ion-item>
+        <ion-input label="Language" labelPlacement="floating" placeholder="Language"
+          [(ngModel)]="form.language"></ion-input>
+      </ion-item>
+
+      <ion-item>
         <ion-select label="Category" label-placement="floating" placeholder="Select One" [(ngModel)]="form.category_id">
           <ion-select-option *ngFor="let c of categories" [value]="c.id">{{ c.name }}</ion-select-option>
         </ion-select>

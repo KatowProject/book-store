@@ -31,6 +31,7 @@ export class EditProductModalComponent implements OnInit {
     this.form.author = this.item.author;
     this.form.total_page = this.item.total_page;
     this.form.status = this.item.status;
+    this.form.language = this.item.language;
 
     this.getAllCategories();
   }
@@ -117,6 +118,7 @@ export class EditProductModalComponent implements OnInit {
         formData.append('author', this.form.author);
         formData.append('total_page', this.form.total_page);
         formData.append('status', this.form.status);
+        formData.append('language', this.form.language);
 
         const response = await fetch(`${environment.BASE_URL}api/admin/products/${this.item.id}`, {
           method: 'POST',

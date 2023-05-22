@@ -71,9 +71,11 @@ class UserController extends Controller
             unset($product['orderProducts']);
         }
 
-        $discovery = $products->take(5);
         $discovery = $products->values()->all();
-        $discovery = collect($products)->sortByDesc('sold_count')->values()->all();
+        usort($discovery, function ($a, $b) {
+            return $b['sold_count'] <=> $a['sold_count'];
+        });
+        $discovery = array_slice($discovery, 0, 5);
 
         return response()->json([
             'statusCode' => 200,

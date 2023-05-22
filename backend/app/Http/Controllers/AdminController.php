@@ -64,6 +64,7 @@ class AdminController extends Controller
             'image' => 'required|mimes:jpg,jpeg,png',
             'description' => 'required|string',
             'publisher' => 'required|string',
+            'language' => 'required|string', // add this line
             'author' => 'required|string',
             'total_page' => 'required|integer',
             'status' => 'required|in:active,inactive',
@@ -89,6 +90,7 @@ class AdminController extends Controller
                 'image' => $image_name,
                 'description' => $data['description'],
                 'status' => $data['status'],
+                'language' => $data['language'],
                 'category_id' => $data['category_id'],
                 'publisher' => $data['publisher'],
                 'author' => $data['author'],
@@ -496,7 +498,7 @@ class AdminController extends Controller
         if (!$order) return response()->json(['statusCode' => 404, 'message' => 'Order not found'], 404);
 
         try {
-            $order->update(['status' => 'decline']);
+            $order->update(['status' => 'declined']);
 
             // return to stock
             foreach ($order->orderProducts as $orderProduct) {

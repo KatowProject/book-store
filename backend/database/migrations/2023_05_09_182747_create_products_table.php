@@ -23,10 +23,10 @@ class CreateProductsTable extends Migration
             $table->integer("price");
             $table->integer("stock");
             $table->string('image')->default('default.jpg');
-            $table->string("description");
+            $table->text('description');
             $table->enum("status", ["active", "inactive"])->default("active");
             $table->bigInteger("category_id")->unsigned();
-            $table->foreign("category_id")->references("id")->on("categories");
+            $table->foreign("category_id")->references("id")->on("categories")->onDelete("set null");
             $table->timestamps();
         });
     }

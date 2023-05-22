@@ -24,7 +24,7 @@
           </ion-card-header>
 
           <ion-card-content>
-            <swiper-container [freeMode]="true" [slidesOffsetBefore]="15" [slidesPerView]="1.5" [spaceBetween]="15">
+            <swiper-container [freeMode]="true" [slidesOffsetBefore]="10" [slidesPerView]="2">
               <swiper-slide *ngFor="let item of category.products">
                 <ion-card>
                   <img alt="{{ item.name }}" src="{{ item.image }}" loading="lazy" class="r-img" />
@@ -34,7 +34,6 @@
                     </h4>
                   </ion-card-header>
                   <!-- hr tailwind -->
-                  <hr class="border-b-2 border-gray-400" />
                   <ion-card-content>
                     <!-- price idr Rp. currency with box -->
                     <ion-row>

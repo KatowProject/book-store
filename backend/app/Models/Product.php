@@ -20,6 +20,7 @@ class Product extends Model
         'image',
         'description',
         'publisher',
+        'language',
         'author',
         'total_page',
         'status',

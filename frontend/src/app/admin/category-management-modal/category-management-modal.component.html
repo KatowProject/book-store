@@ -1,0 +1,26 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button (click)="cancel()" default-href="#"></ion-back-button>
+    </ion-buttons>
+
+    <ion-title>Category Management</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-card>
+    <ion-card-header>
+      <ion-card-title>Add Category</ion-card-title>
+    </ion-card-header>
+
+    <ion-card-content>
+      <ion-item>
+        <ion-input label="Name" labelPlacement="floating" placeholder="Category Name"
+          [(ngModel)]="form.name"></ion-input>
+      </ion-item>
+      <br>
+      <ion-button expand="block" (click)="save()">Save</ion-button>
+    </ion-card-content>
+  </ion-card>
+</ion-content>

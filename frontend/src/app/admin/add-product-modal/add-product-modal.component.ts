@@ -81,6 +81,7 @@ export class AddProductModalComponent implements OnInit {
       formData.append('author', this.form.author);
       formData.append('total_page', this.form.total_page);
       formData.append('status', this.form.status);
+      formData.append('language', this.form.language);
 
       const response = await fetch(`${environment.BASE_URL}api/admin/products`, {
         method: 'POST',

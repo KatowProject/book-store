@@ -639,7 +639,7 @@ export class FolderPage implements OnInit {
             });
 
             try {
-              const res = await fetch(environment.BASE_URL + 'api/admin/environment.BASE_URL-order/' + item.id, {
+              const res = await fetch(environment.BASE_URL + 'api/admin/decline-order/' + item.id, {
                 method: 'PUT',
                 headers: {
                   'Authorization': 'Bearer ' + localStorage.getItem('token')
