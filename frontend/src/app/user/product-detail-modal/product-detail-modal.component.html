@@ -60,7 +60,7 @@
     </ion-button>
 
     <!-- button out of stock -->
-    <ion-button expand="block" color="danger" style="border-radius: 10px; margin: 10px;" *ngIf="item.stock == 0">
+    <ion-button expand="block" color="danger" style="border-radius: 10px; margin: 10px;" *ngIf="item.stock === 0">
       <!-- icon -->
       <ion-icon name="close-circle-outline" slot="start"></ion-icon>
       Out of Stock
