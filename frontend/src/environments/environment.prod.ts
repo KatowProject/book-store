@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  BASE_URL: 'https://bookstore.mengkodingkan.dev/'
+  BASE_URL: 'https://bookstore.my.id/'
 };
