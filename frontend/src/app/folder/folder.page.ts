@@ -208,6 +208,8 @@ export class FolderPage implements OnInit {
               break;
           }
 
+          item.total = parseInt(item.total);
+
           for (const p of item.order_products) {
             p.product.image = environment.BASE_URL + 'images/' + p.product.image;
           }

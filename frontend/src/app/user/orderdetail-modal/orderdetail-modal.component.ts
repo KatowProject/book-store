@@ -12,7 +12,7 @@ export class OrderdetailModalComponent implements OnInit {
   constructor(private modalController: ModalController) { }
 
   ngOnInit() {
-    console.log(this.item);
+    this.item.total = parseInt(this.item.total);
   }
 
   cancel() {
