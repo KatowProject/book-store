@@ -9,7 +9,8 @@ use Illuminate\Support\Facades\Validator;
 
 class AuthController extends Controller
 {
-    public function register(Request $request) {
+    public function register(Request $request)
+    {
         $data = $request->all();
 
         $v = Validator::make($data, [
@@ -44,8 +45,6 @@ class AuthController extends Controller
                 'statusCode' => 201,
                 'message' => 'Successfully created user',
             ], 201);
-
-
         } catch (\Exception $e) {
             return response()->json([
                 'statusCode' => 500,
@@ -54,7 +53,8 @@ class AuthController extends Controller
         }
     }
 
-    public function login(Request $request) {
+    public function login(Request $request)
+    {
         $data = $request->all();
 
         $v = Validator::make($data, [
@@ -88,7 +88,8 @@ class AuthController extends Controller
             'id' => $user->id,
             'name' => $user->name,
             'role' => $user->role,
-            'exp' => time() + 60 * 60 * 24,
+            // 30 days
+            'exp' => time() + 60 * 60 * 24 * 30,
             'iat' => time(),
         ];
 
