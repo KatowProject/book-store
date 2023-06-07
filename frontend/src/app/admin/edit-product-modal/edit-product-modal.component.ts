@@ -34,10 +34,12 @@ export class EditProductModalComponent implements OnInit {
     this.form.language = this.item.language;
 
     this.getAllCategories();
+
+
   }
 
   async getAllCategories() {
-    const response = await fetch('http://localhost:8000/api/admin/categories', {
+    const response = await fetch(`${environment.BASE_URL}api/admin/categories`, {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': 'Bearer ' + localStorage.getItem('token')
